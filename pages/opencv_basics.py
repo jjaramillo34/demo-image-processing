@@ -23,8 +23,9 @@ from utils_helpers import (
     get_location_data,
     download_button,
     ##download_button1, 
-    
     version)
+
+#st.set_page_config(layout="wide")
 
 selected_boxes = (
     "Welcome",
