@@ -7,6 +7,7 @@ import requests
 import shutil
 import imutils
 import streamlit.components.v1 as components
+from datetime import datetime
 from streamlit_cropper import st_cropper
 from webcolors import hex_to_name
 from PIL import Image, ImageColor
@@ -19,11 +20,11 @@ from utils_helpers import (
     converted, 
     insert_data_mongodb,
     average_ratings_mongodb,
+    get_location_data,
     download_button,
-    download_button1, 
+    ##download_button1, 
+    
     version)
-
-url_default = "https://files.worldwildlife.org/wwfcmsprod/images/Tiger_resting_Bandhavgarh_National_Park_India/hero_full/77ic6i4qdj_Medium_WW226365.jpg"
 
 selected_boxes = (
     "Welcome",
@@ -144,6 +145,15 @@ def welcome():
     </a>
     </p>''', unsafe_allow_html=True)
         
+    location_dict = get_location_data()
+    
+    date_r = datetime.now()
+    city = location_dict['city']
+    ip = location_dict['ip']
+    region = location_dict['region']
+    country = location_dict['country']
+    loc = location_dict['loc']
+    
     with st.sidebar.form(key='columns_in_form',clear_on_submit=True): #set clear_on_submit=True so that the form will be reset/cleared once it's submitted
         rating=st.slider("Please rate the app", min_value=1, max_value=5, value=3,help='Drag the slider to rate the app. This is a 1-5 rating scale where 5 is the highest rating')
         feedback=st.text_input(label='Please leave your feedback here')
@@ -154,8 +164,7 @@ def welcome():
             st.markdown(rating)
             st.markdown('Your Feedback:')
             st.markdown(feedback)
-            insert_data_mongodb(rating=rating, feedback=feedback)
-            
+            insert_data_mongodb(rating=rating, feedback=feedback, date_r=date_r, city=city, ip=ip, region=region, country=country, loc=loc)
     
     score_average = average_ratings_mongodb()
     if score_average == 5.0:
