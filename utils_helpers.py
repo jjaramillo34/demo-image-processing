@@ -253,7 +253,7 @@ def insert_data_mongodb(rating, feedback, date_r, city, ip, region, country, loc
         'loc' : { 'type': "Point", 'coordinates': [loc.split(',')[0] ,loc.split(',')[1]] },
         }
     x = collection.insert_one(my_dict)
-    client.close()
+    #client.close()
     print("MongoDB Close successfully!!!")
     
 @st.experimental_singleton
@@ -273,7 +273,7 @@ def average_ratings_mongodb():
                 "avg_rating": {"$avg":"$rating"} } 
             }
     ])
-    client.close()
+    #client.close()
     print("MongoDB Close successfully!!!")
     return list(x)[0]['avg_rating']
 
