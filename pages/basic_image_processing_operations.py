@@ -33,8 +33,6 @@ from utils_helpers import (
     source_code,
     scrape_duckduckgo)
 
-st.set_page_config(layout="wide")
-
 selected_boxes = (
     "Welcome",
     "Demo Adaptive Thresholding",
