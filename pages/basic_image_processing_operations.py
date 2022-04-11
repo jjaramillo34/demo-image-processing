@@ -12,6 +12,7 @@ import requests
 import shutil
 import imutils
 import streamlit.components.v1 as components
+from datetime import datetime
 from streamlit_cropper import st_cropper
 from webcolors import hex_to_name
 from PIL import Image, ImageColor
@@ -23,7 +24,8 @@ from utils_helpers import (
     load_image, 
     load_image_PIL, 
     converted, 
-    #download_button, 
+    #download_button,
+    get_location_data,
     download_button1 , 
     convolve, 
     insert_data_mongodb,
@@ -142,6 +144,15 @@ def welcome():
         <img alt="Linkedin" src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"/>
     </a>
     </p>''', unsafe_allow_html=True)
+        
+    location_dict = get_location_data()
+    
+    date_r = datetime.now()
+    city = location_dict['city']
+    ip = location_dict['ip']
+    region = location_dict['region']
+    country = location_dict['country']
+    loc = location_dict['loc']
     
     with st.sidebar.form(key='columns_in_form',clear_on_submit=True): #set clear_on_submit=True so that the form will be reset/cleared once it's submitted
         rating=st.slider("Please rate the app", min_value=1, max_value=5, value=3,help='Drag the slider to rate the app. This is a 1-5 rating scale where 5 is the highest rating')
@@ -153,7 +164,7 @@ def welcome():
             st.markdown(rating)
             st.markdown('Your Feedback:')
             st.markdown(feedback)
-            insert_data_mongodb(rating=rating, feedback=feedback)
+            insert_data_mongodb(rating=rating, feedback=feedback, date_r=date_r, city=city, ip=ip, region=region, country=country, loc=loc)
     
     score_average = average_ratings_mongodb()
     if score_average == 5.0:

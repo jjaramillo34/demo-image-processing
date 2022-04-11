@@ -144,10 +144,6 @@ def welcome():
     </a>
     </p>''', unsafe_allow_html=True)
         
-    import urllib.request
-    external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
-    print(external_ip)
-    
     with st.sidebar.form(key='columns_in_form',clear_on_submit=True): #set clear_on_submit=True so that the form will be reset/cleared once it's submitted
         rating=st.slider("Please rate the app", min_value=1, max_value=5, value=3,help='Drag the slider to rate the app. This is a 1-5 rating scale where 5 is the highest rating')
         feedback=st.text_input(label='Please leave your feedback here')

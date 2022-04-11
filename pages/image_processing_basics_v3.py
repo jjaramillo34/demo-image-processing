@@ -89,7 +89,7 @@ def video():
  
          st.video(bytes_data)
          
-    video_file = open('typing.mp4', 'rb')
+    video_file = open('videos/typing.mp4', 'rb')
          
  
     video_bytes = video_file.read()
@@ -102,19 +102,19 @@ def face_detection():
     
     if st.button('See Original Image'):
         
-        original = Image.open('friends.jpeg')
+        original = Image.open('images/friends.jpeg')
         st.image(original, use_column_width=True)
     
     
-    image2 = cv2.imread("friends.jpeg")
+    image2 = cv2.imread("images/12.jpg")
 
-    face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    face_cascade = cv2.CascadeClassifier("haarcascade/haarcascade_frontalface_default.xml")
     faces = face_cascade.detectMultiScale(image2)
     print(f"{len(faces)} faces detected in the image.")
     for x, y, width, height in faces:
         cv2.rectangle(image2, (x, y), (x + width, y + height), color=(255, 0, 0), thickness=2)
     
-    cv2.imwrite("faces.jpg", image2)
+    cv2.imwrite("images/faces.jpg", image2)
     
     st.image(image2, use_column_width=True,clamp = True)
  
@@ -122,7 +122,7 @@ def face_detection():
 def feature_detection():
     st.subheader('Feature Detection in images')
     st.write("SIFT")
-    image = load_image("tom1.jpg")
+    image = load_image("image/tom1.jpg")
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     sift = cv2.xfeatures2d.SIFT_create()    
     keypoints = sift.detect(gray, None)
@@ -131,9 +131,8 @@ def feature_detection():
     image = cv2.drawKeypoints(image, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
     st.image(image, use_column_width=True,clamp = True)
     
-    
     st.write("FAST")
-    image_fast = load_image("tom1.jpg")
+    image_fast = load_image("images/tom1.jpg")
     gray = cv2.cvtColor(image_fast, cv2.COLOR_BGR2GRAY)
     fast = cv2.FastFeatureDetector_create()
     keypoints = fast.detect(gray, None)
@@ -145,11 +144,11 @@ def object_detection():
     
     st.header('Object Detection')
     st.subheader("Object Detection is done using different haarcascade files.")
-    img = load_image("clock.jpg")
+    img = load_image("images/clock.jpg")
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
     
-    clock = cv2.CascadeClassifier('haarcascade_wallclock.xml')  
+    clock = cv2.CascadeClassifier('haarcascade/haarcascade_wallclock.xml')  
     found = clock.detectMultiScale(img_gray,  
                                    minSize =(20, 20)) 
     amount_found = len(found)
@@ -164,11 +163,11 @@ def object_detection():
     
     st.text("Detecting eyes from an image")
     
-    image = load_image("eyes.jpg")
+    image = load_image("images/eyes.jpg")
     img_gray_ = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
     img_rgb_ = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) 
         
-    eye = cv2.CascadeClassifier('haarcascade_eye.xml')  
+    eye = cv2.CascadeClassifier('haarcascade/haarcascade_eye.xml')  
     found = eye.detectMultiScale(img_gray_,  
                                        minSize =(20, 20)) 
     amount_found_ = len(found)

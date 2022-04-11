@@ -203,40 +203,53 @@ def download_button(object_to_download, download_filename, button_text, isPNG):
     dl_link = custom_css + f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
     return dl_link
 
-#@st.experimental_memo(ttl=600)
-@st.experimental_singleton
-def insert_data_mongodb(rating, feedback, date_r, city, ip, region, country, loc):
+# returns dictinary with ip location
+def get_location_data():
     import urllib.request
     external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
-    print(external_ip)
-    client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
-    
+    #print(external_ip)
     ACCESS_TOKEN = st.secrets["secret"]["secret"]
     print('Token', ACCESS_TOKEN)
-    
     handler = ipinfo.getHandler(ACCESS_TOKEN)
     details = handler.getDetails(external_ip)
     print(details.details)
-    #print(details.loc)
+    return details.details
+
+# Initialize connection.
+# Uses st.experimental_singleton to only run once.
+@st.experimental_singleton
+def init_connection():
+    return pymongo.MongoClient(**st.secrets["mongo_ratings"])
+
+client = init_connection()    
+
+@st.experimental_memo(ttl=600)
+def insert_data_mongodb(rating, feedback, date_r, city, ip, region, country, loc):
     
+    #client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
+        
     print("MongoDB Connected successfully!!!")
     # database
     database = client['app_ratings']
     # Created collection
     collection = database['ratings']
-    loc = details.details['loc']
-    print(loc.split(',')[0])
+    
+    location_dict = get_location_data()
     
     date_r = datetime.now()
-    
+    loc = location_dict['loc']
+    city = location_dict['city']
+    ip = location_dict['ip']
+    region = location_dict['region']
+    country = location_dict['country']
     my_dict = {
         "rating": rating, 
         "feedback": feedback, 
-        'date': l,
-        'city': details.details['city'],
-        'ip': details.details['ip'],
-        'region': details.details['region'],
-        'country': details.details['country'],
+        'date': date_r,
+        'city': city,
+        'ip': ip,
+        'region': region,
+        'country': country,
         'loc' : { 'type': "Point", 'coordinates': [loc.split(',')[0] ,loc.split(',')[1]] },
         }
     x = collection.insert_one(my_dict)
