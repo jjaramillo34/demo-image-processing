@@ -256,7 +256,7 @@ def insert_data_mongodb(rating, feedback, date_r, city, ip, region, country, loc
     #client.close()
     print("MongoDB Close successfully!!!")
     
-#@st.experimental_singleton
+@st.experimental_singleton
 def average_ratings_mongodb():
     
     print("MongoDB Connected successfully!!!")
@@ -283,7 +283,7 @@ def scrape_duckduckgo(col_name):
 
     print("Connected successfully!!!")
     # database
-    client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
+    #client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
     db = client.duckduckgo
     # Created collection
     c = col_name.replace(" ", '_')
