@@ -277,7 +277,7 @@ def average_ratings_mongodb():
     print("MongoDB Close successfully!!!")
     return list(x)[0]['avg_rating']
 
-@st.experimental_singleton(suppress_st_warning=True)     
+#@st.experimental_singleton(suppress_st_warning=True)     
 def scrape_duckduckgo(col_name):
     # Python code to illustrate inserting data in MongoDB
 
