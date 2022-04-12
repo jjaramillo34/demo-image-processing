@@ -209,7 +209,7 @@ def get_location_data():
     external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
     #print(external_ip)
     ACCESS_TOKEN = st.secrets["secret"]["secret"]
-    print('Token', ACCESS_TOKEN)
+    #print('Token', ACCESS_TOKEN)
     handler = ipinfo.getHandler(ACCESS_TOKEN)
     details = handler.getDetails(external_ip)
     print(details.details)
