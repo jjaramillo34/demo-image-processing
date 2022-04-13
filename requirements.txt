@@ -19,3 +19,4 @@ duckduckgo_search
 ipinfo
 pymongo
 dnspython
+streamlit-drawable-canvas

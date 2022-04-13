@@ -129,7 +129,7 @@ def download_button1(image, label, file_name, mime, key):
     result = Image.fromarray(image)
         
     buf = BytesIO()
-    result.save(buf, format="JPEG")
+    result.save(buf, format="PNG")
     byte_im = buf.getvalue()
     
     btn = st.download_button(

@@ -1,6 +1,7 @@
 import streamlit as st
-import cv2
+import cv2 as cv
 import numpy as np
+import pandas as pd
 import string
 import random
 import requests
@@ -11,8 +12,10 @@ from datetime import datetime
 from streamlit_cropper import st_cropper
 from webcolors import hex_to_name
 from PIL import Image, ImageColor
+from streamlit_drawable_canvas import st_canvas
 from utils_helpers import (
     convert_rgb_to_names,
+    download_button1,
     #download_button1, 
     load_image, 
     increment_counter, 
@@ -37,7 +40,6 @@ selected_boxes = (
     "Demo Rotate",
     "Demo Split-Merge",
     "Demo Translate",
-    
 )
 
 aspect_dict = {
@@ -47,17 +49,17 @@ aspect_dict = {
         "2:3": (2, 3),
         "Free": None
     }
+
 rand = ''.join(random.choice(string.ascii_lowercase) for i in range(10))
-download = f'{rand}.jpg'
+download = f'{rand}.jpeg'
 
 language = 'python'
 default_image = 'images/nice.jpeg'
-#download = 'download.png' 
 button = 'Download Result Image'
 original = 'Original Image'
 code = 'Source Code'
-font = cv2.FONT_HERSHEY_SIMPLEX
-
+mime_type = 'image/jpeg'
+font = cv.FONT_HERSHEY_SIMPLEX
 def app():
     
     selected_box = st.sidebar.selectbox("Choosse on of the following", selected_boxes)
@@ -113,9 +115,9 @@ def welcome():
 >
 >Rotation --- OpenCV Rotate Image
 >
->Resizing --- OpenCV Resize Image (cv2.resize)
+>Resizing --- OpenCV Resize Image (cv.resize)
 >
->Flipping --- OpenCV Flip Image (cv2.flip)
+>Flipping --- OpenCV Flip Image (cv.flip)
 >
 >Cropping --- Crop Image with OpenCV
 >
@@ -257,7 +259,7 @@ def cropping():
                 
     else:
         st.header("Croppign Demo using OpenCV")
-        image = cv2.imread(default_image)
+        image = cv.imread(default_image)
         h = image.shape[0]
         w = image.shape[1]
         realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
@@ -306,7 +308,7 @@ def flipping():
             st.image(image)    
         elif st.session_state.count == 1:
             # flip the image vertically
-            flipped = cv2.flip(image, 0)
+            flipped = cv.flip(image, 0)
             st.markdown("[INFO] flipping image vertically...")
             st.write("Clicks:", st.session_state.count)
             st.image(flipped)
@@ -315,15 +317,15 @@ def flipping():
             st.markdown("Source Code")
             st.code('''
 # flip the image vertically
-image = cv2.imread("your_image")
-flipped = cv2.flip(image, 1)
+image = cv.imread("your_image")
+flipped = cv.flip(image, 1)
 st.markdown("[INFO] flipping image vertically...")
 st.image(flipped)
 ''', language=language)
             
         elif st.session_state.count == 2:
             # flip the image horizontally
-            flipped = cv2.flip(image, 1)
+            flipped = cv.flip(image, 1)
             st.markdown("[INFO] flipping image horizontally...")
             st.image(flipped)
             result = Image.fromarray(flipped)
@@ -331,12 +333,12 @@ st.image(flipped)
             st.markdown("Source Code")
             st.code('''
 # flip the image horizontally
-flipped = cv2.flip(image, 1)
+flipped = cv.flip(image, 1)
 st.markdown("[INFO] flipping image horizontally...")
 st.image(flipped)''', language=language)
         elif st.session_state.count == 3:
             # flip the image along both axes
-            flipped = cv2.flip(image, -1)
+            flipped = cv.flip(image, -1)
             st.markdown("[INFO] flipping image horizontally and vertically...")
             st.image(flipped)
             result = Image.fromarray(flipped)
@@ -344,7 +346,7 @@ st.image(flipped)''', language=language)
             st.markdown("Source Code")
             st.code('''
 # flip the image along both axes
-flipped = cv2.flip(image, -1)
+flipped = cv.flip(image, -1)
 st.markdown("[INFO] flipping image horizontally and vertically...")
 st.image(flipped)''', language=language)
         elif st.session_state.count == 4:
@@ -365,7 +367,7 @@ st.image(flipped)''', language=language)
             st.image(image)    
         elif st.session_state.count == 1:
             # flip the image vertically
-            flipped = cv2.flip(image, 0)
+            flipped = cv.flip(image, 0)
             st.markdown("[INFO] flipping image vertically...")
             st.write("Clicks:", st.session_state.count)
             st.image(flipped)
@@ -374,15 +376,15 @@ st.image(flipped)''', language=language)
             st.markdown("Source Code")
             st.code('''
 # flip the image vertically
-image = cv2.imread("your_image")
-flipped = cv2.flip(image, 1)
+image = cv.imread("your_image")
+flipped = cv.flip(image, 1)
 st.markdown("[INFO] flipping image vertically...")
 st.image(flipped)
 ''', language=language)
     
         elif st.session_state.count == 2:
             # flip the image horizontally
-            flipped = cv2.flip(image, 1)
+            flipped = cv.flip(image, 1)
             st.markdown("[INFO] flipping image horizontally...")
             st.image(flipped)
             result = Image.fromarray(flipped)
@@ -390,18 +392,18 @@ st.image(flipped)
             st.markdown("Source Code")
             st.code('''
 # flip the image horizontally
-flipped = cv2.flip(image, 1)
+flipped = cv.flip(image, 1)
 st.markdown("[INFO] flipping image horizontally...")
 st.image(flipped)''', language=language)
         elif st.session_state.count == 3:
             # flip the image along both axes
-            flipped = cv2.flip(image, -1)
+            flipped = cv.flip(image, -1)
             st.markdown("[INFO] flipping image horizontally and vertically...")
             st.image(flipped)
             st.markdown("Source Code")
             st.code('''
 # flip the image along both axes
-flipped = cv2.flip(image, -1)
+flipped = cv.flip(image, -1)
 st.markdown("[INFO] flipping image horizontally and vertically...")
 st.image(flipped)''', language=language)
         elif st.session_state.count == 4:
@@ -433,9 +435,9 @@ def masking():
                 topLeft = st.slider('Select a range of TopLeft Corner', 0, image.shape[1], (0, 200))
             with col2:
                 topRight = st.slider('Select a range of TopRight Corner', 0, image.shape[2], (400, 850))
-            #cv2.putText(image, f'({topLeft[0]+ 10}, {topLeft[1]+ 10})', topLeft, font, 4,(255,255,255),2,cv2.LINE_AA)
-            cv2.rectangle(mask, topLeft, topRight, 255, -1)
-            masked = cv2.bitwise_and(image, image, mask=mask)
+            #cv.putText(image, f'({topLeft[0]+ 10}, {topLeft[1]+ 10})', topLeft, font, 4,(255,255,255),2,cv.LINE_AA)
+            cv.rectangle(mask, topLeft, topRight, 255, -1)
+            masked = cv.bitwise_and(image, image, mask=mask)
             
             #show the output images
             #st.markdown('Rectangular Mask')
@@ -448,8 +450,8 @@ def masking():
 # -- pixels with value of 0 (background) are ignored in the original image while
 # mask pixels with a value 255 (foreground) are allowed to be kept
 mask = np.zeros(image.shape[:2], dtype="uint8")
-cv2.rectangle(mask, (0, 200), (400, 850), 255, -1)
-masked = cv2.bitwise_and(image, image, mask=mask)
+cv.rectangle(mask, (0, 200), (400, 850), 255, -1)
+masked = cv.bitwise_and(image, image, mask=mask)
 
 #show the output images
 #st.markdown('Rectangular Mask')
@@ -464,8 +466,8 @@ st.image(masked)''', language=language)
                 coor = st.slider('Select a range of Coordinates', 0, image.shape[1], (300, 500))
             with col2:
                 r = st.slider('Select a range of Radius', 0, 800, 298)
-            cv2.circle(mask, coor, r, 255, -1)
-            masked = cv2.bitwise_and(image, image, mask=mask)
+            cv.circle(mask, coor, r, 255, -1)
+            masked = cv.bitwise_and(image, image, mask=mask)
             
             # show the output images
             #st.markdown("Circular Mask")
@@ -476,8 +478,8 @@ st.image(masked)''', language=language)
             st.code('''
 # now let's make a circular mask with a radius of 298 pixels and appy the mask again
 mask = np.zeros(image.shape[:2], dtype="uint8")
-cv2.circle(mask, (300, 500), 300, 255, -1)
-masked = cv2.bitwise_and(image, image, mask=mask)
+cv.circle(mask, (300, 500), 300, 255, -1)
+masked = cv.bitwise_and(image, image, mask=mask)
 
 # show the output images
 #st.markdown("Circular Mask")
@@ -499,9 +501,9 @@ st.image(masked)''', language=language)
                 topLeft = st.slider('Select a range of TopLeft Corner', 0, image.shape[1], (0, 200))
             with col2:
                 topRight = st.slider('Select a range of TopRight Corner', 0, image.shape[2], (400, 850))
-            #cv2.putText(image, f'({topLeft[0]+ 10}, {topLeft[1]+ 10})', topLeft, font, 4,(255,255,255),2,cv2.LINE_AA)
-            cv2.rectangle(mask, topLeft, topRight, 255, -1)
-            masked = cv2.bitwise_and(image, image, mask=mask)
+            #cv.putText(image, f'({topLeft[0]+ 10}, {topLeft[1]+ 10})', topLeft, font, 4,(255,255,255),2,cv.LINE_AA)
+            cv.rectangle(mask, topLeft, topRight, 255, -1)
+            masked = cv.bitwise_and(image, image, mask=mask)
             
             #show the output images
             #st.markdown('Rectangular Mask')
@@ -514,8 +516,8 @@ st.image(masked)''', language=language)
 # -- pixels with value of 0 (background) are ignored in the original image while
 # mask pixels with a value 255 (foreground) are allowed to be kept
 mask = np.zeros(image.shape[:2], dtype="uint8")
-cv2.rectangle(mask, (0, 200), (400, 850), 255, -1)
-masked = cv2.bitwise_and(image, image, mask=mask)
+cv.rectangle(mask, (0, 200), (400, 850), 255, -1)
+masked = cv.bitwise_and(image, image, mask=mask)
 
 #show the output images
 #st.markdown('Rectangular Mask')
@@ -530,8 +532,8 @@ st.image(masked)''', language=language)
                 coor = st.slider('Select a range of Coordinates', 0, image.shape[1], (300, 500))
             with col2:
                 r = st.slider('Select a range of Radius', 0, 800, 298)
-            cv2.circle(mask, coor, r, 255, -1)
-            masked = cv2.bitwise_and(image, image, mask=mask)
+            cv.circle(mask, coor, r, 255, -1)
+            masked = cv.bitwise_and(image, image, mask=mask)
             # show the output images
             st.markdown("Mask Applied to image") 
             st.image(masked)
@@ -539,8 +541,8 @@ st.image(masked)''', language=language)
             st.code('''
 # now let's make a circular mask with a radius of 298 pixels and appy the mask again
 mask = np.zeros(image.shape[:2], dtype="uint8")
-cv2.circle(mask, (300, 500), 300, 255, -1)
-masked = cv2.bitwise_and(image, image, mask=mask)
+cv.circle(mask, (300, 500), 300, 255, -1)
+masked = cv.bitwise_and(image, image, mask=mask)
 
 # show the output images
 st.markdown("Mask Applied to image") 
@@ -559,11 +561,11 @@ st.image(masked)''', language=language)
         u = np.uint8([[[0,236,236]]])
         l = np.uint8([[[0,236,236]]])
         # define range of blue color in HSV
-        lower_yellow = np.array(cv2.cvtColor(l,cv2.COLOR_BGR2HSV))
-        upper_yellow = np.array( cv2.cvtColor(u,cv2.COLOR_BGR2HSV))
+        lower_yellow = np.array(cv.cvtColor(l,cv.COLOR_BGR2HSV))
+        upper_yellow = np.array( cv.cvtColor(u,cv.COLOR_BGR2HSV))
                 
         hsv_upper = np.uint8([[[hsv_coverted[2], hsv_coverted[1], hsv_coverted[0]]]])
-        hsv_color = cv2.cvtColor(hsv_upper,cv2.COLOR_BGR2HSV)
+        hsv_color = cv.cvtColor(hsv_upper,cv.COLOR_BGR2HSV)
         
         hsv_lower = [hsv_color[0][0][0] - 10, 100, 100]
         
@@ -593,7 +595,7 @@ st.image(masked)''', language=language)
         kernel = np.ones((5, 5), np.uint8)
         
         # converting the image to HSV format
-        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
         
         # defining the lower and upper values of HSV,
         # this will detect yellow colour
@@ -602,14 +604,14 @@ st.image(masked)''', language=language)
         
         # creating the mask by eroding,morphing,
         # dilating process
-        Mask = cv2.inRange(hsv, lower, upper)
-        Mask = cv2.erode(Mask, kernel, iterations=1)
-        Mask = cv2.morphologyEx(Mask, cv2.MORPH_OPEN, kernel)
-        Mask = cv2.dilate(Mask, kernel, iterations=1)
+        Mask = cv.inRange(hsv, lower, upper)
+        Mask = cv.erode(Mask, kernel, iterations=1)
+        Mask = cv.morphologyEx(Mask, cv.MORPH_OPEN, kernel)
+        Mask = cv.dilate(Mask, kernel, iterations=1)
         
         # Inverting the mask by
         # performing bitwise-not operation
-        Mask = cv2.bitwise_not(Mask)
+        Mask = cv.bitwise_not(Mask)
         
         st.image(Mask)
 
@@ -631,7 +633,7 @@ def resizing():
         dim = (300, int(image.shape[0] * r))
 
         # perform the actual resizing of the image
-        resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+        resized = cv.resize(image, dim, interpolation=cv.INTER_AREA)
         st.markdown("Resized (Width)")
         st.image(resized)
         st.markdown('Source Code')
@@ -644,7 +646,7 @@ r = 300.0 / image.shape[1]
 dim = (300, int(image.shape[0] * r))
 
 # perform the actual resizing of the image
-resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+resized = cv.resize(image, dim, interpolation=cv.INTER_AREA)
 st.image(resized)''', language=language)
 
         # let's resize the image to have a height of 50 pixels, again keeping
@@ -653,7 +655,7 @@ st.image(resized)''', language=language)
         dim = (int(image.shape[1] * r), 150)
 
         # perform the resizing
-        resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+        resized = cv.resize(image, dim, interpolation=cv.INTER_AREA)
         st.markdown("Resized (Height)")
         st.image(resized)
         st.markdown('Source Code')
@@ -664,7 +666,7 @@ r = 150.0 / image.shape[0]
 dim = (int(image.shape[1] * r), 150)
 
 # perform the resizing
-resized = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
+resized = cv.resize(image, dim, interpolation=cv.INTER_AREA)
 st.image(resized)
 
 # calculating the ratio each and every time we want to resize an
@@ -687,11 +689,11 @@ st.image(resized)''', language=language)
     elif options == 'Interpolazion methods OpenCV':
         # construct the list of interpolation methods in OpenCV
         methods = [
-            ("cv2.INTER_NEAREST", cv2.INTER_NEAREST),
-            ("cv2.INTER_LINEAR", cv2.INTER_LINEAR),
-            ("cv2.INTER_AREA", cv2.INTER_AREA),
-            ("cv2.INTER_CUBIC", cv2.INTER_CUBIC),
-            ("cv2.INTER_LANCZOS4", cv2.INTER_LANCZOS4)]
+            ("cv.INTER_NEAREST", cv.INTER_NEAREST),
+            ("cv.INTER_LINEAR", cv.INTER_LINEAR),
+            ("cv.INTER_AREA", cv.INTER_AREA),
+            ("cv.INTER_CUBIC", cv.INTER_CUBIC),
+            ("cv.INTER_LANCZOS4", cv.INTER_LANCZOS4)]
 
         # loop over the interpolation methods
         for (name, method) in methods:
@@ -706,11 +708,11 @@ st.image(resized)''', language=language)
         st.code('''
 # construct the list of interpolation methods in OpenCV
 methods = [
-    ("cv2.INTER_NEAREST", cv2.INTER_NEAREST),
-    ("cv2.INTER_LINEAR", cv2.INTER_LINEAR),
-    ("cv2.INTER_AREA", cv2.INTER_AREA),
-    ("cv2.INTER_CUBIC", cv2.INTER_CUBIC),
-    ("cv2.INTER_LANCZOS4", cv2.INTER_LANCZOS4)]
+    ("cv.INTER_NEAREST", cv.INTER_NEAREST),
+    ("cv.INTER_LINEAR", cv.INTER_LINEAR),
+    ("cv.INTER_AREA", cv.INTER_AREA),
+    ("cv.INTER_CUBIC", cv.INTER_CUBIC),
+    ("cv.INTER_LANCZOS4", cv.INTER_LANCZOS4)]
 
 # loop over the interpolation methods
 for (name, method) in methods:
@@ -753,20 +755,20 @@ def rotating():
         (cX, cY) = (w // 2, h // 2)
 
         #rotate our image by 45 degrees around the center of the image
-        M = cv2.getRotationMatrix2D((cX, cY), 45, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h))
+        M = cv.getRotationMatrix2D((cX, cY), 45, 1.0)
+        rotated = cv.warpAffine(image, M, (w, h))
         st.markdown("Rotated by 45 degrees")
         st.image(rotated)
 
         #rotate our image by -90 degrees around the center of the image
-        M = cv2.getRotationMatrix2D((cX, cY), -90, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h))
+        M = cv.getRotationMatrix2D((cX, cY), -90, 1.0)
+        rotated = cv.warpAffine(image, M, (w, h))
         st.markdown("Rotated by 90 degrees") 
         st.image(rotated)
 
         # rotate our image around an arbitrary point rather than the center
-        M = cv2.getRotationMatrix2D((10, 10), 45, 1.0)
-        rotated = cv2.warpAffine(image, M, (w, h))
+        M = cv.getRotationMatrix2D((10, 10), 45, 1.0)
+        rotated = cv.warpAffine(image, M, (w, h))
         st.markdown("Rotated by 45 degrees"),
         st.image(rotated)
     elif options == 'Rotate with imutils':
@@ -814,7 +816,7 @@ def split_merge():
         image = converted(image)
         st.image(image, width=300)
         
-        (B, G, R) = cv2.split(image)
+        (B, G, R) = cv.split(image)
 
         # show each channel individually
         col1, col2, col3 = st.columns(3)
@@ -831,7 +833,7 @@ def split_merge():
             
         st.markdown('Source Code')
         st.code('''
-    (B, G, R) = cv2.split(image)
+    (B, G, R) = cv.split(image)
 
     # show each channel individually
     st.image(R)
@@ -840,35 +842,35 @@ def split_merge():
 
         # merge the image back together again
         col1, col2, col3 = st.columns(3)
-        merged = cv2.merge([B, G, R])
+        merged = cv.merge([B, G, R])
         st.markdown("Merged")
         st.image(merged, width=300)
         
         # visualize each channel in color
         zeros = np.zeros(image.shape[:2], dtype="uint8")
         with col1:
-            #cv2.imshow("Red", cv2.merge([zeros, zeros, R]))
+            #cv.imshow("Red", cv.merge([zeros, zeros, R]))
             st.markdown("Red")
-            st.image(cv2.merge([zeros, zeros, R]))
+            st.image(cv.merge([zeros, zeros, R]))
         with col2:
-            #cv2.imshow("Green", cv2.merge([zeros, G, zeros]))
+            #cv.imshow("Green", cv.merge([zeros, G, zeros]))
             st.markdown("Green")
-            st.image(cv2.merge([zeros, G, zeros]))
+            st.image(cv.merge([zeros, G, zeros]))
         with col3:
-            #cv2.imshow("Blue", cv2.merge([B, zeros, zeros]))
+            #cv.imshow("Blue", cv.merge([B, zeros, zeros]))
             st.markdown("Blue")
-            st.image(cv2.merge([B, zeros, zeros]))
+            st.image(cv.merge([B, zeros, zeros]))
         st.markdown('Source Code')
         st.code('''
     # merge the image back together again
-    merged = cv2.merge([B, G, R])
+    merged = cv.merge([B, G, R])
     st.image(merged, width=300)
 
     # visualize each channel in color
     zeros = np.zeros(image.shape[:2], dtype="uint8")
-    st.image(cv2.merge([zeros, zeros, R]))
-    st.image(cv2.merge([zeros, G, zeros]))
-    st.image(cv2.merge([B, zeros, zeros]))''', language=language)
+    st.image(cv.merge([zeros, zeros, R]))
+    st.image(cv.merge([zeros, G, zeros]))
+    st.image(cv.merge([B, zeros, zeros]))''', language=language)
         
     else:
         st.header("Split-Merge Demo")
@@ -877,7 +879,7 @@ def split_merge():
         st.markdown('Original')
         image = load_image('images/RGB.jpg')
         st.image(image, width=300)
-        (B, G, R) = cv2.split(image)
+        (B, G, R) = cv.split(image)
 
         # show each channel individually
         col1, col2, col3 = st.columns(3)
@@ -898,7 +900,7 @@ def split_merge():
     st.markdown('Original')
     image = load_image('images/RGB.jpg')
     st.image(image, width=300)
-    (B, G, R) = cv2.split(image)
+    (B, G, R) = cv.split(image)
 
     # show each channel individually
     col1, col2, col3 = st.columns(3)
@@ -913,7 +915,7 @@ def split_merge():
         st.image(B)''', language=language)
 
         # merge the image back together again
-        merged = cv2.merge([B, G, R])
+        merged = cv.merge([B, G, R])
         st.markdown("Merged")
         st.image(merged, width=300)
         
@@ -921,39 +923,39 @@ def split_merge():
         zeros = np.zeros(image.shape[:2], dtype="uint8")
         col1, col2, col3 = st.columns(3)
         with col1:
-            #cv2.imshow("Red", cv2.merge([zeros, zeros, R]))
+            #cv.imshow("Red", cv.merge([zeros, zeros, R]))
             st.markdown("Red")
-            st.image(cv2.merge([zeros, zeros, R]))
+            st.image(cv.merge([zeros, zeros, R]))
         with col2:
-            #cv2.imshow("Green", cv2.merge([zeros, G, zeros]))
+            #cv.imshow("Green", cv.merge([zeros, G, zeros]))
             st.markdown("Green")
-            st.image(cv2.merge([zeros, G, zeros]))
+            st.image(cv.merge([zeros, G, zeros]))
         with col3:
-            #cv2.imshow("Blue", cv2.merge([B, zeros, zeros]))
+            #cv.imshow("Blue", cv.merge([B, zeros, zeros]))
             st.markdown("Blue")
-            st.image(cv2.merge([B, zeros, zeros]))
+            st.image(cv.merge([B, zeros, zeros]))
         st.markdown('Source Code')
         st.code('''
 # merge the image back together again
 col1, col2, col3 = st.columns(3)
-merged = cv2.merge([B, G, R])
+merged = cv.merge([B, G, R])
 st.markdown("Merged")
 st.image(merged, width=300)
 
 # visualize each channel in color
 zeros = np.zeros(image.shape[:2], dtype="uint8")
 with col1:
-    #cv2.imshow("Red", cv2.merge([zeros, zeros, R]))
+    #cv.imshow("Red", cv.merge([zeros, zeros, R]))
     st.markdown("Red")
-    st.image(cv2.merge([zeros, zeros, R]))
+    st.image(cv.merge([zeros, zeros, R]))
 with col2:
-    #cv2.imshow("Green", cv2.merge([zeros, G, zeros]))
+    #cv.imshow("Green", cv.merge([zeros, G, zeros]))
     st.markdown("Green")
-    st.image(cv2.merge([zeros, G, zeros]))
+    st.image(cv.merge([zeros, G, zeros]))
 with col3:
-    #cv2.imshow("Blue", cv2.merge([B, zeros, zeros]))
+    #cv.imshow("Blue", cv.merge([B, zeros, zeros]))
     st.markdown("Blue")
-    st.image(cv2.merge([B, zeros, zeros]))''', language=language)
+    st.image(cv.merge([B, zeros, zeros]))''', language=language)
 
 def translating():
     st.header("Translate Demo")
@@ -971,27 +973,27 @@ def translating():
 
         # shift the image 25 pixels to the right and 50 pixels down
         M = np.float32([[1, 0 , 25], [0, 1, 50]])
-        shifted = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
+        shifted = cv.warpAffine(image, M, (image.shape[1], image.shape[0]))
         st.markdown("Shifted Down and Right")
         st.image(shifted)
 
         # shift the image 25 pixels to the left and 50 pixels down
         M = np.float32([[1, 0 , -50], [0, 1, 25]])
-        shifted = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
+        shifted = cv.warpAffine(image, M, (image.shape[1], image.shape[0]))
         st.markdown("Shifted Down and Left")
         st.image(shifted)
 
         # now, let's shift the image 50 pixels to the left and 90 pixels
         # up by specifying negative values for the x and y directions respectively
         M = np.float32([[1, 0, -50], [0, 1, -90]])
-        shifted = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
+        shifted = cv.warpAffine(image, M, (image.shape[1], image.shape[0]))
         st.markdown("Shifted Up and and Left")
         st.image(shifted)
 
         # now, let's shift the image 50 pixels to the right and 90 pixels
         # up by specifying negative values for the x and y directions respectively
         M = np.float32([[1, 0, 50], [0, 1, -90]])
-        shifted = cv2.warpAffine(image, M, (image.shape[1], image.shape[0]))
+        shifted = cv.warpAffine(image, M, (image.shape[1], image.shape[0]))
         st.markdown("Shifted Up and and Right")
         st.image(shifted)
 
@@ -1003,252 +1005,187 @@ def translating():
     
 def drawing():
     st.header("Drawing Demo")
-    options = st.sidebar.radio('Drawing Options options', ('Drawing Basics', 'Drawing OpenCV Logo'))
+    options = st.sidebar.radio('Drawing Options', ('Drawing Basics', 'Drawing OpenCV Logo', 'Drawable Canvas - Streamlit'))
     if options == 'Drawing Basics':
-        version()
-    
-        # initialize our canvas as a 300x300 pixel image with 3 channels
-        # (Red, Green, and Blue) with a black background
-        canvas = np.zeros((300, 300, 3), dtype="uint8")
+        with st.expander('Show Drawing Basics', expanded=True):
+            cols = st.columns(3)
+            # initialize our canvas as a 500x500 pixel image with 3 channels (Red, Green, and Blue) with a black background
+            canvas = np.zeros((500, 500, 3), dtype="uint8")
 
-        # draw a green line from the top-left corner of our canvas to the
-        # bottom-right
-        green = (0, 255, 0)
-        cv2.line(canvas, (0, 0), (300, 300), green)
-        #st.markdown("Canvas")
-        #st.image(canvas)
+            # draw a green line from the top-left corner of our canvas to the bottom-right
+            green = (0, 255, 0)
+            cv.line(canvas, (0, 0), (500, 500), green)
+            
+            # draw a 3 pixel thick red line from the top-right corner to the bottom-left
+            red = (0, 0, 255)
+            cv.line(canvas, (500, 0), (0, 500), red, 3)
+            
+            # draw a green 50x50 pixel square, starting at 10x10 and ending at 60x60
+            cv.rectangle(canvas, (10, 10), (60, 60), green)
+            
+            # draw another rectangle, this one red with 5 pixel thickness
+            cv.rectangle(canvas, (50, 200), (200, 225), red, 5)
+            
+            # draw a final rectangle (blue and filled in )
+            blue = (255, 0, 0)
+            cv.rectangle(canvas, (200, 50), (225, 125), blue, -1)
+            # display our image
+            cols[0].markdown("Canvas")
+            cols[0].image(canvas)
+            with cols[0]:
+                download_button1(canvas, button, download, mime_type, key="1.1")
+                
+            # re-initialize our canvas as an empty array, then compute the center (x, y)-coordinates of the canvas
+            canvas = np.zeros((500, 500, 3), dtype="uint8")
+            (centerX, centerY) = (canvas.shape[1] // 2, canvas.shape[0] // 2)
+            white = (255, 255, 255)
+
+            # loop over increasing radii, from 25 pixels to 150 pixels in 25 pixel increments
+            for r in range(0, 525, 25):
+                # draw a white circle with the current radius size
+                cv.circle(canvas, (centerX, centerY), r, white)
+            # display our image
+            cols[1].markdown("Canvas")
+            cols[1].image(canvas)
+            with cols[1]:
+                download_button1(canvas, button, download, mime_type, key="1.2")
         
-        # draw a 3 pixel thick red line from the top-right corner to the
-        # bottom-left
-        red = (0, 0, 255)
-        cv2.line(canvas, (300, 0), (0, 300), red, 3)
-        #st.markdown("Canvas")
-        #st.image(canvas)
+            # re-initialize our canvas once again
+            canvas = np.zeros((500, 500, 3), dtype="uint8")
+
+            # let's draw 25 random circles
+            for i in range(0, 25):
+                # randomly generate a radius size between 5 and 200, generate a random color, and then pick a random 
+                # point on our canvas where the circle will be drawn
+                radius = np.random.randint(5, high=200)
+                color = np.random.randint(0, high=256, size=(3,)).tolist()
+                pt = np.random.randint(0, high=500, size=(2,))
+
+                # draw our random circle on the canvas
+                cv.circle(canvas, tuple(pt), radius, color, -1)
+            # display our image
+            cols[2].markdown("Canvas")
+            cols[2].image(canvas)
+            with cols[2]:
+                download_button1(canvas, button, download, mime_type, key="1.3")    
         
-        # draw a green 50x50 pixel square, starting at 10x10 and ending at 60x60
-        cv2.rectangle(canvas, (10, 10), (60, 60), green)
-        #st.markdown("Canvas")
-        #st.image(canvas)
-        
-        # draw another rectangle, this one red with 5 pixel thickness
-        cv2.rectangle(canvas, (50, 200), (200, 225), red, 5)
-        #st.markdown("Canvas")
-        #st.image(canvas)
-        
-        # draw a final rectangle (blue and filled in )
-        blue = (255, 0, 0)
-        cv2.rectangle(canvas, (200, 50), (225, 125), blue, -1)
-        st.markdown("Canvas")
-        st.image(canvas)
-        
-        result = Image.fromarray(canvas)
-        st.markdown(download_button(result, download, button, True), unsafe_allow_html=True)
-        
-        st.markdown(code)
-        st.code('''
-# initialize our canvas as a 300x300 pixel image with 3 channels
-# (Red, Green, and Blue) with a black background
-canvas = np.zeros((300, 300, 3), dtype="uint8")
-
-# draw a green line from the top-left corner of our canvas to the
-# bottom-right
-green = (0, 255, 0)
-cv2.line(canvas, (0, 0), (300, 300), green)
-#st.markdown("Canvas")
-#st.image(canvas)
-
-# draw a 3 pixel thick red line from the top-right corner to the
-# bottom-left
-red = (0, 0, 255)
-cv2.line(canvas, (300, 0), (0, 300), red, 3)
-#st.markdown("Canvas")
-#st.image(canvas)
-
-# draw a green 50x50 pixel square, starting at 10x10 and ending at 60x60
-cv2.rectangle(canvas, (10, 10), (60, 60), green)
-#st.markdown("Canvas")
-#st.image(canvas)
-
-# draw another rectangle, this one red with 5 pixel thickness
-cv2.rectangle(canvas, (50, 200), (200, 225), red, 5)
-#st.markdown("Canvas")
-#st.image(canvas)
-
-# draw a final rectangle (blue and filled in )
-blue = (255, 0, 0)
-cv2.rectangle(canvas, (200, 50), (225, 125), blue, -1)
-st.markdown("Canvas")
-st.image(canvas)''', language=language)
-        
-        # re-initialize our canvas as an empty array, then compute the
-        # center (x, y)-coordinates of the canvas
-        canvas = np.zeros((300, 300, 3), dtype="uint8")
-        (centerX, centerY) = (canvas.shape[1] // 2, canvas.shape[0] // 2)
-        white = (255, 255, 255)
-
-        # loop over increasing radii, from 25 pixels to 150 pixels in 25
-        # pixel increments
-        for r in range(0, 175, 25):
-            # draw a white circle with the current radius size
-            cv2.circle(canvas, (centerX, centerY), r, white)
-
-        # show our work of art
-        st.markdown("Canvas")
-        st.image(canvas)
-        
-        result = Image.fromarray(canvas)
-        st.markdown(download_button(result, download, button, True), unsafe_allow_html=True)
-        
-        st.markdown(code)
-        st.code(
-            '''
-# re-initialize our canvas as an empty array, then compute the
-# center (x, y)-coordinates of the canvas
-canvas = np.zeros((300, 300, 3), dtype="uint8")
-(centerX, centerY) = (canvas.shape[1] // 2, canvas.shape[0] // 2)
-white = (255, 255, 255)
-
-# loop over increasing radii, from 25 pixels to 150 pixels in 25
-# pixel increments
-for r in range(0, 175, 25):
-    # draw a white circle with the current radius size
-    cv2.circle(canvas, (centerX, centerY), r, white)
-
-# show our work of art
-st.markdown("Canvas")
-st.image(canvas)''', language=language)
-        
-        # re-initialize our canvas once again
-        canvas = np.zeros((300, 300, 3), dtype="uint8")
-
-        # let's draw 25 random circles
-        for i in range(0, 25):
-            # randomly generate a radius size between 5 and 200, generate a
-            # random color, and then pick a random point on our canvas where
-            # the circle will be drawn
-            radius = np.random.randint(5, high=200)
-            color = np.random.randint(0, high=256, size=(3,)).tolist()
-            pt = np.random.randint(0, high=300, size=(2,))
-
-            # draw our random circle on the canvas
-            cv2.circle(canvas, tuple(pt), radius, color, -1)
-
-        # display our masterpiece to our screen
-        st.markdown("Canvas")
-        st.image(canvas)
-        
-        result = Image.fromarray(canvas)
-        st.markdown(download_button(result, download, button, True), unsafe_allow_html=True)
-        
-        st.markdown(code)
-        st.code('''
-# re-initialize our canvas once again
-canvas = np.zeros((300, 300, 3), dtype="uint8")
-
-# let's draw 25 random circles
-for i in range(0, 25):
-    # randomly generate a radius size between 5 and 200, generate a
-    # random color, and then pick a random point on our canvas where
-    # the circle will be drawn
-    radius = np.random.randint(5, high=200)
-    color = np.random.randint(0, high=256, size=(3,)).tolist()
-    pt = np.random.randint(0, high=300, size=(2,))
-
-    # draw our random circle on the canvas
-    cv2.circle(canvas, tuple(pt), radius, color, -1)
-
-# display our masterpiece to our screen
-st.markdown("Canvas")
-st.image(canvas)''', language=language)
-    
     elif options == 'Drawing OpenCV Logo':
         
-        image = np.full((360, 512, 3), 255, dtype="uint8")
+        with st.expander('Show Drawing OpenCV Logo', expanded=True):
+            cols = st.columns(2)
+            # initialize our canvas as a 300x300 pixel image with 3 channels (Red, Green, and Blue) with a black background
+            image = np.full((360, 512, 3), 255, dtype="uint8")
+            #draw ellipsis to recreate logo for OpenCV
+            image = cv.ellipse(image, (256, 80), (60,60), 120,0,300,(0,0,255),-1)
+            image = cv.ellipse(image, (256, 80), (20,20), 120,0,300,(255,255,255),-1)
+            image = cv.ellipse(image, (176, 200), (60,60), 0,0,300,(0,255,0),-1)
+            image = cv.ellipse(image, (176, 200), (20,20), 0,0,300,(255,255,255),-1)
+            image = cv.ellipse(image, (336, 200), (60,60), 300,0,300,(255,0,0),-1)
+            image = cv.ellipse(image, (336, 200), (20,20), 300,0,300,(255,255,255),-1)
+            
+            # draw OpenCV text 
+            image = cv.putText(image, "OpenCV", (196,296), font, 1, (0,0,0), 4, cv.LINE_AA)
+            
+            # Find Canny edges
+            edged = cv.Canny(image, 30, 200)
+            
+            # Finding Contours
+            # Use a copy of the image e.g. edged.copy() since findContours alters the image
+            contours, hierarchy = cv.findContours(edged, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+            # Draw all contours -1 signifies drawing all contours
+            cv.drawContours(image, contours, -1, (0, 0, 0), 2)
+            
+            kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+            image = cv.filter2D(image, -1, kernel)
+            
+            #output draw image
+            cols[0].markdown('Drawn OpenCV Original Logo')
+            cols[0].image(image)
+            with cols[0]:
+                download_button1(image, button, download, mime_type, key="1.1")
+            
+            image = np.full((360, 512, 3), 255, dtype="uint8")
+            
+            # random color list
+            color = [
+                np.random.randint(0, high=256, size=(3,)).tolist(),
+                np.random.randint(0, high=256, size=(3,)).tolist(),
+                np.random.randint(0, high=256, size=(3,)).tolist()
+            ]
+            #draw ellipsis to recreate logo for OpenCV
+            image = cv.ellipse(image, (256, 80), (60,60), 120, 0, 300, color[0], -1)
+            image = cv.ellipse(image, (256, 80), (20,20), 120, 0, 300,(255,255,255),-1)
+            image = cv.ellipse(image, (176, 200), (60,60), 0, 0, 300, color[1], -1)
+            image = cv.ellipse(image, (176, 200), (20,20), 0, 0, 300, (255,255,255), -1)
+            image = cv.ellipse(image, (336, 200), (60,60), 300, 0, 300, color[2], -1)
+            image = cv.ellipse(image, (336, 200), (20,20), 300, 0, 300, (255, 255, 255), -1)
+            
+            # draw OpenCV text 
+            image = cv.putText(image, "OpenCV", (196,296), font, 1, (0,0,0), 4, cv.LINE_AA)        
+                    
+            #output draw image
+            cols[1].markdown('Drawn OpenCV Random Colors Logo')
+            cols[1].image(image)
+            with cols[0]:
+                download_button1(image, button, download, mime_type, key="1.1")
+            
         
-        #draw ellipsis to recreate logo for OpenCV
-        image = cv2.ellipse(image, (256, 80), (60,60), 120,0,300,(0,0,255),-1)
-        image = cv2.ellipse(image, (256, 80), (20,20), 120,0,300,(255,255,255),-1)
-        image = cv2.ellipse(image, (176, 200), (60,60), 0,0,300,(0,255,0),-1)
-        image = cv2.ellipse(image, (176, 200), (20,20), 0,0,300,(255,255,255),-1)
-        image = cv2.ellipse(image, (336, 200), (60,60), 300,0,300,(255,0,0),-1)
-        image = cv2.ellipse(image, (336, 200), (20,20), 300,0,300,(255,255,255),-1)
-        
-        # draw OpenCV text 
-        image = cv2.putText(image, "OpenCV", (196,296), font, 1, (0,0,0), 4, cv2.LINE_AA)        
-        
-        #output draw image
-        st.markdown('Drawn OpenCV Original Logo')
-        st.image(image)
-        
-        result = Image.fromarray(image)
-        st.markdown(download_button(result, download, button, True), unsafe_allow_html=True)
-        
-        st.markdown(code)
-        st.code(
-            '''
-image = np.full((360, 512, 3), 255, dtype="uint8")
+    else:
+        # Specify canvas parameters in application
+        drawing_mode = st.sidebar.selectbox(
+            "Drawing tool:", ("point", "freedraw", "line", "rect", "circle", "polygon", "transform")
+        )
 
-#draw ellipsis to recreate logo for OpenCV
-image = cv2.ellipse(image, (256, 80), (60,60), 120,0,300,(0,0,255),-1)
-image = cv2.ellipse(image, (256, 80), (20,20), 120,0,300,(255,255,255),-1)
-image = cv2.ellipse(image, (176, 200), (60,60), 0,0,300,(0,255,0),-1)
-image = cv2.ellipse(image, (176, 200), (20,20), 0,0,300,(255,255,255),-1)
-image = cv2.ellipse(image, (336, 200), (60,60), 300,0,300,(255,0,0),-1)
-image = cv2.ellipse(image, (336, 200), (20,20), 300,0,300,(255,255,255),-1)
+        stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
+        if drawing_mode == 'point':
+            point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
+        stroke_color = st.sidebar.color_picker("Stroke color hex: ")
+        bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
+        
+        realtime_update = st.sidebar.checkbox("Update in realtime", True)
+        bg_image = st.file_uploader("Background image:", type=["png", "jpg"])
 
-# draw OpenCV text 
-image = cv2.putText(image, "OpenCV", (196,296), font, 1, (0,0,0), 4, cv2.LINE_AA)        
+        cols = st.columns(2)
+        # Create a canvas component
+        with cols[0]:
+            canvas_result = st_canvas(
+                fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
+                stroke_width=stroke_width,
+                stroke_color=stroke_color,
+                background_color=bg_color,
+                #background_image=Image.open(bg_image) if bg_image else None,
+                background_image=bg_image,
+                update_streamlit=realtime_update,
+                height=500,
+                drawing_mode=drawing_mode,
+                point_display_radius=point_display_radius if drawing_mode == 'point' else 0,
+                key="canvas",
+            )
 
-#output draw image
-st.markdown('Drawn OpenCV Original Logo')
-st.image(image)''', language=language)
-        
-        image = np.full((360, 512, 3), 255, dtype="uint8")
-        
-        # random color list
-        color = [
-            np.random.randint(0, high=256, size=(3,)).tolist(),
-            np.random.randint(0, high=256, size=(3,)).tolist(),
-            np.random.randint(0, high=256, size=(3,)).tolist()
-        ]
-        #draw ellipsis to recreate logo for OpenCV
-        image = cv2.ellipse(image, (256, 80), (60,60), 120, 0, 300, color[0], -1)
-        image = cv2.ellipse(image, (256, 80), (20,20), 120, 0, 300,(255,255,255),-1)
-        image = cv2.ellipse(image, (176, 200), (60,60), 0, 0, 300, color[1], -1)
-        image = cv2.ellipse(image, (176, 200), (20,20), 0, 0, 300, (255,255,255), -1)
-        image = cv2.ellipse(image, (336, 200), (60,60), 300, 0, 300, color[2], -1)
-        image = cv2.ellipse(image, (336, 200), (20,20), 300, 0, 300, (255, 255, 255), -1)
-        
-        # draw OpenCV text 
-        image = cv2.putText(image, "OpenCV", (196,296), font, 1, (0,0,0), 4, cv2.LINE_AA)        
-        
-        result = Image.fromarray(image)
-        st.markdown(download_button(result, download, button, True), unsafe_allow_html=True)
+        # Do something interesting with the image data and paths
+        with cols[1]:
+            if canvas_result.image_data is not None:
+                if bg_image is not None:
+                    #image = load_image_PIL(bg_image)
+                    #image = converted(image)
+                    #st.image(image)
+                    st.image(canvas_result.image_data)
+                    #print(canvas_result.image_data)
+                    #im = Image.fromarray(canvas_result)
+                    img = cv.cvtColor(canvas_result.image_data, cv.COLOR_RGB2RGBA)
+                    with cols[1]:
+                        download_button1(img, button, download, mime_type, key="1.1")
+                else:
+                    st.image(canvas_result.image_data)
+                    print(canvas_result.image_data)
+                    #im = Image.fromarray(canvas_result)
+                    img = cv.cvtColor(canvas_result.image_data, cv.COLOR_RGB2RGBA)
+                    with cols[1]:
+                        download_button1(img, button, download, mime_type, key="1.2")
                 
-        #output draw image
-        st.markdown('Drawn OpenCV Random Colors Logo')
-        st.image(image)
-        
-        st.markdown(code)
-        st.code(
-            '''
-image = np.full((360, 512, 3), 255, dtype="uint8")
-
-# random colors list
-color = [
-    np.random.randint(0, high=256, size=(3,)).tolist(),
-    np.random.randint(0, high=256, size=(3,)).tolist(),
-    np.random.randint(0, high=256, size=(3,)).tolist()
-]
-image = cv2.ellipse(image, (256, 80), (60,60), 120, 0, 300, color[0], -1)
-image = cv2.ellipse(image, (256, 80), (20,20), 120, 0, 300,(255,255,255),-1)
-image = cv2.ellipse(image, (176, 200), (60,60), 0, 0, 300, color[1], -1)
-image = cv2.ellipse(image, (176, 200), (20,20), 0, 0, 300, (255,255,255), -1)
-image = cv2.ellipse(image, (336, 200), (60,60), 300, 0, 300, color[2], -1)
-image = cv2.ellipse(image, (336, 200), (20,20), 300, 0, 300, (255, 255, 255), -1)
-
-# draw OpenCV text 
-image = cv2.putText(image, "OpenCV", (196,296), font, 1, (0,0,0), 4, cv2.LINE_AA)
-st.markdown('Drawn OpenCV Random Colors Logo')
-st.image(image)''', language=language)
-        
+                #download_button1(im, button, download, mime_type, key="1.1")
+        if canvas_result.json_data is not None:
+            objects = pd.json_normalize(canvas_result.json_data["objects"]) # need to convert obj to str because PyArrow
+            for col in objects.select_dtypes(include=['object']).columns:
+                objects[col] = objects[col].astype("str")
+            st.dataframe(objects)
