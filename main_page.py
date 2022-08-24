@@ -1,20 +1,10 @@
-from pages import opencv_basics
 import streamlit as st
 from datetime import datetime
 import streamlit.components.v1 as components
 from utils_helpers import (
-    convert_rgb_to_names,
-    download_button1,
-    load_image,
-    increment_counter,
-    load_image_PIL,
-    converted,
     insert_data_mongodb,
     average_ratings_mongodb,
     get_location_data,
-    tutorial,
-    gitlab_code,
-    scrape_duckduckgo,
     version)
 
 # st.set_page_config(layout="wide")
