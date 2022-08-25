@@ -8,6 +8,7 @@ from utils_helpers import (
     version)
 
 # st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 
 # opencv_basics.app()
 

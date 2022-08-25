@@ -256,8 +256,13 @@ def cropping():
                 _ = cropped_img.thumbnail((400, 400))
                 st.image(cropped_img)
 
-                st.markdown(download_button(cropped_img, download,
-                            button, True), unsafe_allow_html=True)
+                # print(type(cropped_img))
+                c = converted(cropped_img)
+                img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
+                # print(type(img))
+                download_button1(img, button, download,
+                                 mime_type, key="cropping_1.1")
+
         else:
 
             st.write(original)
@@ -286,8 +291,12 @@ def cropping():
             _ = cropped_img.thumbnail((400, 400))
             st.image(cropped_img)
 
-            st.markdown(download_button(cropped_img, download,
-                        button, True), unsafe_allow_html=True)
+            # print(type(cropped_img))
+            c = converted(cropped_img)
+            img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
+            # print(type(img))
+            download_button1(img, button, download,
+                             mime_type, key="cropping_1.2")
 
     else:
         st.header("Croppign Demo using OpenCV")
@@ -326,8 +335,9 @@ def cropping():
             st.image(cropped_image)
 
             result = Image.fromarray(cropped_image)
-            st.markdown(download_button(result, download,
-                        button, True), unsafe_allow_html=True)
+            c = converted(result)
+            download_button1(c, button, download,
+                             mime_type, key="cropping_1.3")
 
 
 def flipping():

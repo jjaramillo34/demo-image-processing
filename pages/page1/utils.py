@@ -7,15 +7,19 @@ import random
 import requests
 import shutil
 import imutils
+import time
 import streamlit.components.v1 as components
 from datetime import datetime
 from streamlit_cropper import st_cropper
 from webcolors import hex_to_name
 from PIL import Image, ImageColor
 from streamlit_drawable_canvas import st_canvas
+from duckduckgo_search import ddg_images
+
 from utils_helpers import (
     convert_rgb_to_names,
     download_button1,
+    duckduck_images,
     load_image,
     increment_counter,
     load_image_PIL,
@@ -28,6 +32,7 @@ from utils_helpers import (
     scrape_duckduckgo,
     source_code,
     tutorial_page,
+    duckduck_images,
     version)
 
 aspect_dict = {
@@ -51,7 +56,7 @@ font = cv.FONT_HERSHEY_SIMPLEX
 
 
 def drawing():
-    print(button)
+    # print(button)
     st.header("Drawing Demo")
     options = st.sidebar.radio(
         'Drawing Options', ('Drawing Basics', 'Drawing OpenCV Logo', 'Drawable Canvas - Streamlit'))
@@ -83,7 +88,7 @@ def drawing():
             cols[0].image(canvas)
             with cols[0]:
                 download_button1(canvas, button, download,
-                                 mime_type, key="1.1")
+                                 mime_type, key="drawing_1.1")
 
             # re-initialize our canvas as an empty array, then compute the center (x, y)-coordinates of the canvas
             canvas = np.zeros((500, 500, 3), dtype="uint8")
@@ -122,16 +127,19 @@ def drawing():
                                  mime_type, key="1.3")
 
         tutorial_page(
-            'Drawing pyimagesearch.com',
+            'Drawing pyimagesearch.com Tutorial',
             'https://pyimagesearch.com/2021/01/27/drawing-with-opencv/',)
 
         source_code(
-            'Source Code + Drawing pyimagesearch.com',
-            'https://gist.github.com/jjaramillo34/fb83acff62ce6502c398ba7133ab066c')
+            'Source Code Gist',
+            'https://gist.github.com/jjaramillo34/ad585a865169a0817a3d712d1f091471')
 
         with st.expander('DuckDuckGo Search Results'):
             st.subheader('More About Drawing')
             scrape_duckduckgo('basic drawing opencv')
+
+        duckduck_images('Sample Drawing Images',
+                        'basic drawing opencv')
 
     elif options == 'Drawing OpenCV Logo':
 
@@ -209,6 +217,21 @@ def drawing():
                 download_button1(image, button, download,
                                  mime_type, key="drawing_1.1")
 
+        tutorial_page(
+            'Drawing pyimagesearch.com Tutorial',
+            'https://pyimagesearch.com/2021/01/27/drawing-with-opencv/',)
+
+        source_code(
+            'Source Code Gist',
+            'https://gist.github.com/jjaramillo34/ad585a865169a0817a3d712d1f091471')
+
+        with st.expander('DuckDuckGo Search Results'):
+            st.subheader('More About Drawing')
+            scrape_duckduckgo('drawing opencv logo')
+
+        duckduck_images('Sample Drawing Images',
+                        'drawing opencv logo')
+
     else:
         # Specify canvas parameters in application
         drawing_mode = st.sidebar.selectbox(
@@ -261,7 +284,7 @@ def drawing():
                                          mime_type, key="1.1")
                 else:
                     st.image(canvas_result.image_data)
-                    print(canvas_result.image_data)
+                    # print(canvas_result.image_data)
                     #im = Image.fromarray(canvas_result)
                     img = cv.cvtColor(
                         canvas_result.image_data, cv.COLOR_RGB2RGBA)
@@ -275,3 +298,18 @@ def drawing():
             for col in objects.select_dtypes(include=['object']).columns:
                 objects[col] = objects[col].astype("str")
             st.dataframe(objects)
+
+        tutorial_page(
+            'Drawing pyimagesearch.com Tutorial',
+            'https://pyimagesearch.com/2021/01/27/drawing-with-opencv/',)
+
+        source_code(
+            'Source Code Gist',
+            'https://gist.github.com/jjaramillo34/ad585a865169a0817a3d712d1f091471')
+
+        with st.expander('DuckDuckGo Search Results'):
+            st.subheader('More About Drawing')
+            scrape_duckduckgo('drawable canvas streamlit')
+
+        duckduck_images('Sample Drawing Images',
+                        'drawable canvas streamlit')

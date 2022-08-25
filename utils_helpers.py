@@ -1,4 +1,5 @@
 
+import json
 from time import sleep
 import cv2
 import streamlit as st
@@ -17,7 +18,7 @@ import pymongo
 from datetime import datetime
 from webcolors import CSS3_HEX_TO_NAMES, hex_to_rgb
 from skimage.exposure import rescale_intensity
-from duckduckgo_search import ddg
+from duckduckgo_search import ddg, ddg_images
 from io import BytesIO
 from PIL import Image
 from scipy.spatial import KDTree
@@ -69,12 +70,75 @@ def source_code(title, gist_url):
     with st.expander(title):
         cols = st.columns(1)
         with cols[0]:
-            github_gist(gist_url, width=1200, height=800)
+            github_gist(gist_url, width=1400, height=800)
 
 
 def tutorial(title, url):
     with st.expander(title):
         components.iframe(url, height=800, scrolling=True)
+
+
+def find_json():
+    import os
+    from glob import glob
+    PATH = os.getcwd()
+    EXT = "*.json"
+    all_csv_files = [file
+                     for path, subdir, files in os.walk(PATH)
+                     for file in glob(os.path.join(path, EXT))]
+    # print(all_csv_files)
+    return (all_csv_files)
+
+
+def duckduck_images(title, keywords):
+    import json
+    a = find_json()
+    res = [i for i in a if keywords in i]
+    # print(res)
+    if res:
+        with st.expander(title):
+            #print('File found no need to scrape')
+            f = open(res[0])
+            r = json.load(f)
+            # print(r)
+            cols = st.columns(3)
+            # for c in range(0, 4):
+            with cols[0]:
+                for v, e in enumerate(r):
+                    if v == 0 or v == 3 or v == 6 or v == 9:
+                        st.image(e['image'], width=400)
+
+            with cols[1]:
+                for v, e in enumerate(r):
+                    if v == 1 or v == 4 or v == 7 or v == 10:
+                        st.image(e['image'], width=400)
+
+            with cols[2]:
+                for v, e in enumerate(r):
+                    if v == 2 or v == 5 or v == 8 or v == 11:
+                        st.image(e['image'], width=400)
+
+    else:
+        with st.expander(title):
+            r = ddg_images(keywords, region='wt-wt', safesearch='Off', size=None,
+                           type_image=None, layout=None, license_image=None, max_results=12, output='json')
+            time.sleep(0.75)
+            cols = st.columns(3)
+            # for c in range(0, 4):
+            with cols[0]:
+                for v, e in enumerate(r):
+                    if v == 0 or v == 3 or v == 6 or v == 9:
+                        st.image(e['image'], width=400)
+
+            with cols[1]:
+                for v, e in enumerate(r):
+                    if v == 1 or v == 4 or v == 7 or v == 10:
+                        st.image(e['image'], width=400)
+
+            with cols[2]:
+                for v, e in enumerate(r):
+                    if v == 2 or v == 5 or v == 8 or v == 11:
+                        st.image(e['image'], width=400)
 
 
 def gist_code(title, gist_url):
@@ -90,7 +154,6 @@ def gitlab_code(title, gitlab_url):
 
 
 def convert_rgb_to_names(rgb_tuple):
-
     # a dictionary of all the hex and their respective names in css3
     css3_db = CSS3_HEX_TO_NAMES
     names = []
@@ -174,74 +237,7 @@ def download_button1(image, label, file_name, mime, key):
     return btn
 
 
-def download_button(object_to_download, download_filename, button_text, isPNG):
-    """
-    Generates a link to download the given object_to_download.
-
-    Params:
-    ------
-    object_to_download:  The object to be downloaded.
-    download_filename (str): filename and extension of file. e.g. mydata.csv,
-    some_txt_output.txt download_link_text (str): Text to display for download
-    link.
-    button_text (str): Text to display on download button (e.g. 'click here to download file')
-    pickle_it (bool): If True, pickle file.
-
-    Returns:
-    -------
-    (str): the anchor tag to download object_to_download
-
-    Examples:
-    --------
-    download_link(Pillow_image_from_cv_matrix, 'your_image.jpg', 'Click to me to download!')
-    """
-
-    buffered = BytesIO()
-    if isPNG:
-        object_to_download.save(buffered, format="PNG")
-    else:
-        object_to_download.save(buffered, format="JPEG")
-    b64 = base64.b64encode(buffered.getvalue()).decode()
-
-    button_uuid = str(uuid.uuid4()).replace('-', '')
-    button_id = re.sub('\d+', '', button_uuid)
-
-    custom_css = f""" 
-        <style>
-            #{button_id} {{
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                background-color: rgb(255, 255, 255);
-                color: rgb(38, 39, 48);
-                padding: .25rem .75rem;
-                position: relative;
-                text-decoration: none;
-                border-radius: 4px;
-                border-width: 1px;
-                border-style: solid;
-                border-color: rgb(230, 234, 241);
-                border-image: initial;
-            }} 
-
-            #{button_id}:hover {{
-                border-color: rgb(246, 51, 102);
-                color: rgb(246, 51, 102);
-            }}
-            #{button_id}:active {{
-                box-shadow: none;
-                background-color: rgb(246, 51, 102);
-                color: white;
-                }}
-        </style> """
-
-    dl_link = custom_css + \
-        f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
-    return dl_link
-
 # returns dictinary with ip location
-
-
 def get_location_data():
     import urllib.request
     external_ip = urllib.request.urlopen(
@@ -251,7 +247,7 @@ def get_location_data():
     #print('Token', ACCESS_TOKEN)
     handler = ipinfo.getHandler(ACCESS_TOKEN)
     details = handler.getDetails(external_ip)
-    print(details.details)
+    # print(details.details)
     return details.details
 
 # Initialize connection.
@@ -271,7 +267,7 @@ def insert_data_mongodb(rating, feedback, date_r, city, ip, region, country, loc
 
     #client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
 
-    print("MongoDB Connected successfully!!!")
+    #print("MongoDB Connected successfully!!!")
     # database
     database = client['app_ratings']
     # Created collection
@@ -297,13 +293,13 @@ def insert_data_mongodb(rating, feedback, date_r, city, ip, region, country, loc
     }
     x = collection.insert_one(my_dict)
     # client.close()
-    print("MongoDB Close successfully!!!")
+    #print("MongoDB Close successfully!!!")
 
 
 @st.experimental_singleton
 def average_ratings_mongodb():
 
-    print("MongoDB Connected successfully!!!")
+    #print("MongoDB Connected successfully!!!")
     # database
     #client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
     database = client['app_ratings']
@@ -318,7 +314,7 @@ def average_ratings_mongodb():
          }
     ])
     # client.close()
-    print("MongoDB Close successfully!!!")
+    #print("MongoDB Close successfully!!!")
     return list(x)[0]['avg_rating']
 
 # @st.experimental_singleton(suppress_st_warning=True)
@@ -327,7 +323,7 @@ def average_ratings_mongodb():
 def scrape_duckduckgo(col_name):
     # Python code to illustrate inserting data in MongoDB
 
-    print("Connected successfully!!!")
+    #print("Connected successfully!!!")
     # database
     #client = pymongo.MongoClient(st.secrets["mongo_ratings"]['host'])
     db = client.duckduckgo
@@ -335,7 +331,7 @@ def scrape_duckduckgo(col_name):
     c = col_name.replace(" ", '_')
     collection = db[c]
     if c in db.list_collection_names():
-        print("The collection exists.")
+        #print("The collection exists.")
         # This is a cursor instance
         cur = collection.find()
         results = list(cur)
@@ -343,19 +339,20 @@ def scrape_duckduckgo(col_name):
         # Checking the cursor is empty
         # or not
         if len(results) == 0:
-            print("Empty Cursor")
+            #print("Empty Cursor")
             keywords = col_name
             results = ddg(keywords, region='wt-wt',
-                          safesearch='Moderate', time='y', max_results=10)
-            time.sleep(3.75)
+                          safesearch='Moderate', time='y', max_results=28)
+            time.sleep(1.75)
+            # print(results)
             result_df = pd.DataFrame.from_dict(results)
             result_df.reset_index(inplace=True)
             data_dict = result_df.to_dict("records")
             collection.insert_many(data_dict)
             st.dataframe(result_df, height=850)
         else:
-            print("Cursor is Not Empty")
-            print("Do Stuff Here")
+            #print("Cursor is Not Empty")
+            #print("Do Stuff Here")
             cols = st.columns(2)
             results = collection.find({})
             with cols[0]:
@@ -375,10 +372,10 @@ def scrape_duckduckgo(col_name):
                     mime='text/csv')
     else:
         collection = db.create_collection(c)
-        print("The collection not exists collection has been creaed.")
+        #print("The collection not exists collection has been creaed.")
         keywords = col_name
         results = ddg(keywords, region='wt-wt',
-                      safesearch='Moderate', time='y', max_results=10)
+                      safesearch='Moderate', time='y', max_results=28)
         time.sleep(0.75)
         result_df = pd.DataFrame.from_dict(results)
         result_df.reset_index(inplace=True)
@@ -387,7 +384,8 @@ def scrape_duckduckgo(col_name):
         st.dataframe(result_df, height=850)
 
     if col_name in db.list_collection_names():
-        print(True)
+        # print(True)
+        pass
     # else:
     #    with st.spinner('Getting results from duckduckgo...'):
     #        keywords = col_name
