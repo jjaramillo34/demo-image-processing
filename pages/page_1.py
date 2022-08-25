@@ -30,7 +30,7 @@ from utils_helpers import (
     tutorial_page,
     version)
 
-from pages.page1.utils import drawing
+from pages.page1.utils import drawing, cropping
 
 # st.set_page_config(layout="wide")
 
@@ -214,130 +214,6 @@ def welcome():
             'https://charts.mongodb.com/charts-project-0-koqvp/public/dashboards/62523657-6131-48ab-8c6c-3893cfb849fa', height=900)
 
     version()
-
-
-def cropping():
-    cropper_options = st.sidebar.radio(
-        "Cropping Options",
-        ('Streamlit-Cropper', 'OpenCV Cropper'))
-    st.sidebar.markdown('Streamlit is **_really_ cool**.')
-
-    st.set_option('deprecation.showfileUploaderEncoding', False)
-
-    if cropper_options == 'Streamlit-Cropper':
-        # Upload an image and set some options for demo purposes
-        st.header("Cropping Demo using Streamlit-Cropper")
-        img_file = st.file_uploader(label='Upload a file', type=[
-                                    'png', 'jpg', 'jpge'], key='1')
-
-        if img_file is not None:
-
-            realtime_update = st.sidebar.checkbox(
-                label="Update in Real Time", value=True)
-            box_color = st.sidebar.color_picker(
-                label="Box Color", value='#0000FF')
-            aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=[
-                                             "1:1", "16:9", "4:3", "2:3", "Free"])
-            # Streamlit version
-            version()
-
-            aspect_ratio = aspect_dict[aspect_choice]
-
-            if img_file:
-                img = Image.open(img_file)
-                if not realtime_update:
-                    st.write("Double click to save crop")
-                # Get a cropped image from the frontend
-                cropped_img = st_cropper(img, realtime_update=realtime_update, box_color=box_color,
-                                         aspect_ratio=aspect_ratio)
-
-                # Manipulate cropped image at will
-                st.write("Preview")
-                _ = cropped_img.thumbnail((400, 400))
-                st.image(cropped_img)
-
-                # print(type(cropped_img))
-                c = converted(cropped_img)
-                img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
-                # print(type(img))
-                download_button1(img, button, download,
-                                 mime_type, key="cropping_1.1")
-
-        else:
-
-            st.write(original)
-            img = Image.open(default_image)
-            #img = converted(img)
-
-            realtime_update = st.sidebar.checkbox(
-                label="Update in Real Time", value=True)
-            box_color = st.sidebar.color_picker(
-                label="Box Color", value='#0000FF')
-            aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=[
-                                             "1:1", "16:9", "4:3", "2:3", "Free"])
-            # Streamlit version
-            st.sidebar.caption(f"Streamlit version `{st.__version__}`")
-
-            aspect_ratio = aspect_dict[aspect_choice]
-
-            if not realtime_update:
-                st.write("Double click to save crop")
-            # Get a cropped image from the frontend
-            cropped_img = st_cropper(img, realtime_update=realtime_update, box_color=box_color,
-                                     aspect_ratio=aspect_ratio)
-
-            # Manipulate cropped image at will
-            st.write("Preview")
-            _ = cropped_img.thumbnail((400, 400))
-            st.image(cropped_img)
-
-            # print(type(cropped_img))
-            c = converted(cropped_img)
-            img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
-            # print(type(img))
-            download_button1(img, button, download,
-                             mime_type, key="cropping_1.2")
-
-    else:
-        st.header("Croppign Demo using OpenCV")
-        image = cv.imread(default_image)
-        h = image.shape[0]
-        w = image.shape[1]
-        realtime_update = st.sidebar.checkbox(
-            label="Update in Real Time", value=True)
-        image_file = st.file_uploader(label='Upload a file', type=[
-                                      'png', 'jpg', 'jpge'], key='2')
-        st.write(original)
-        st.image(image)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            x = st.slider('Select starting point on x axis',
-                          min_value=0, max_value=w)
-            st.write('Point X: ', x)
-            y = st.slider('Select starting point on y axis',
-                          min_value=0, max_value=h)
-            st.write('Point Y:', y)
-        with col2:
-            image_width = st.slider(
-                'Select width of cropped image', min_value=0, max_value=w - x)
-            st.write('Image Width :', image_width)
-            image_height = st.slider(
-                'Select height of cropped image', min_value=0, max_value=h - y)
-            st.write('Image Height :', image_height)
-
-        if x == 0 or y == 0 or image_width == 0 or image_height == 0:
-            pass
-        else:
-            cropped_image = image[y:y+image_height,
-                                  x:x+image_width]  # Cropping using Slicing
-            st.write("Preview")
-            st.image(cropped_image)
-
-            result = Image.fromarray(cropped_image)
-            c = converted(result)
-            download_button1(c, button, download,
-                             mime_type, key="cropping_1.3")
 
 
 def flipping():

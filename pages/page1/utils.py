@@ -313,3 +313,158 @@ def drawing():
 
         duckduck_images('Sample Drawing Images',
                         'drawable canvas streamlit')
+
+
+def cropping():
+    cropper_options = st.sidebar.radio(
+        "Cropping Options",
+        ('Streamlit-Cropper', 'OpenCV Cropper'))
+    st.sidebar.markdown('Streamlit is **_really_ cool**.')
+
+    st.set_option('deprecation.showfileUploaderEncoding', False)
+
+    if cropper_options == 'Streamlit-Cropper':
+        # Upload an image and set some options for demo purposes
+        with st.expander('Streamlit-Cropper', expanded=True):
+            st.header("Cropping Demo using Streamlit-Cropper")
+            img_file = st.file_uploader(label='Upload a file', type=[
+                                        'png', 'jpg', 'jpge'], key='1')
+
+            if img_file is not None:
+
+                realtime_update = st.sidebar.checkbox(
+                    label="Update in Real Time", value=True)
+                box_color = st.sidebar.color_picker(
+                    label="Box Color", value='#0000FF')
+                aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=[
+                    "1:1", "16:9", "4:3", "2:3", "Free"])
+                # Streamlit version
+                version()
+
+                aspect_ratio = aspect_dict[aspect_choice]
+
+                if img_file:
+                    img = Image.open(img_file)
+                    if not realtime_update:
+                        st.write("Double click to save crop")
+                    # Get a cropped image from the frontend
+                    cropped_img = st_cropper(img, realtime_update=realtime_update, box_color=box_color,
+                                             aspect_ratio=aspect_ratio)
+
+                    # Manipulate cropped image at will
+                    st.write("Preview")
+                    _ = cropped_img.thumbnail((400, 400))
+                    st.image(cropped_img)
+
+                    # print(type(cropped_img))
+                    c = converted(cropped_img)
+                    img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
+                    # print(type(img))
+                    download_button1(img, button, download,
+                                     mime_type, key="cropping_1.1")
+            else:
+
+                st.write(original)
+                img = Image.open(default_image)
+                #img = converted(img)
+
+                realtime_update = st.sidebar.checkbox(
+                    label="Update in Real Time", value=True)
+                box_color = st.sidebar.color_picker(
+                    label="Box Color", value='#0000FF')
+                aspect_choice = st.sidebar.radio(label="Aspect Ratio", options=[
+                    "1:1", "16:9", "4:3", "2:3", "Free"])
+                # Streamlit version
+                st.sidebar.caption(f"Streamlit version `{st.__version__}`")
+
+                aspect_ratio = aspect_dict[aspect_choice]
+
+                if not realtime_update:
+                    st.write("Double click to save crop")
+                # Get a cropped image from the frontend
+                cropped_img = st_cropper(img, realtime_update=realtime_update, box_color=box_color,
+                                         aspect_ratio=aspect_ratio)
+
+                # Manipulate cropped image at will
+                st.write("Preview")
+                _ = cropped_img.thumbnail((400, 400))
+                st.image(cropped_img)
+
+                # print(type(cropped_img))
+                c = converted(cropped_img)
+                img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
+                # print(type(img))
+                download_button1(img, button, download,
+                                 mime_type, key="cropping_1.2")
+
+        tutorial_page(
+            'Stramlit-Cropper pyimagesearch.com Tutorial',
+            'https://pyimagesearch.com/2021/01/19/crop-image-with-opencv/',)
+
+        source_code(
+            'Source Code Gist',
+            'https://gist.github.com/jjaramillo34/f9fce0fe5b458918dcfcbcdbaa441e40')
+
+        with st.expander('DuckDuckGo Search Results'):
+            st.subheader('More About Cropping')
+            scrape_duckduckgo('streamlit-cropper')
+
+        duckduck_images('Sample Streamlit-Cropper Images',
+                        'streamlit-cropper')
+
+    else:
+        with st.expander('OpenCV Cropper', expanded=True):
+            st.header("Croppign Demo using OpenCV")
+            image = cv.imread(default_image)
+            h = image.shape[0]
+            w = image.shape[1]
+            realtime_update = st.sidebar.checkbox(
+                label="Update in Real Time", value=True)
+            image_file = st.file_uploader(label='Upload a file', type=[
+                'png', 'jpg', 'jpge'], key='2')
+            st.write(original)
+            st.image(image)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                x = st.slider('Select starting point on x axis',
+                              min_value=0, max_value=w)
+                st.write('Point X: ', x)
+                y = st.slider('Select starting point on y axis',
+                              min_value=0, max_value=h)
+                st.write('Point Y:', y)
+            with col2:
+                image_width = st.slider(
+                    'Select width of cropped image', min_value=0, max_value=w - x)
+                st.write('Image Width :', image_width)
+                image_height = st.slider(
+                    'Select height of cropped image', min_value=0, max_value=h - y)
+                st.write('Image Height :', image_height)
+
+            if x == 0 or y == 0 or image_width == 0 or image_height == 0:
+                pass
+            else:
+                cropped_image = image[y:y+image_height,
+                                      x:x+image_width]  # Cropping using Slicing
+                st.write("Preview")
+                st.image(cropped_image)
+
+                result = Image.fromarray(cropped_image)
+                c = converted(result)
+                download_button1(c, button, download,
+                                 mime_type, key="cropping_1.3")
+
+        tutorial_page(
+            'Cropping pyimagesearch.com Tutorial',
+            'https://pyimagesearch.com/2021/01/19/crop-image-with-opencv/',)
+
+        source_code(
+            'Source Code Gist',
+            'https://gist.github.com/jjaramillo34/f9fce0fe5b458918dcfcbcdbaa441e40')
+
+        with st.expander('DuckDuckGo Search Results'):
+            st.subheader('More About Cropping')
+            scrape_duckduckgo('cropping opencv')
+
+        duckduck_images('Sample Cropping Images',
+                        'cropping opencv')
