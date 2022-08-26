@@ -15,11 +15,13 @@ from webcolors import hex_to_name
 from PIL import Image, ImageColor
 from streamlit_drawable_canvas import st_canvas
 from duckduckgo_search import ddg_images
+from streamlit_embedcode import github_gist, gitlab_snippet
 
 from utils_helpers import (
     convert_rgb_to_names,
     download_button1,
     duckduck_images,
+    gist_code,
     load_image,
     increment_counter,
     load_image_PIL,
@@ -468,3 +470,345 @@ def cropping():
 
         duckduck_images('Sample Cropping Images',
                         'cropping opencv')
+
+
+def flipping():
+    st.header("Flipping Demo")
+    img_file = st.file_uploader(
+        label='Upload a file', type=['png', 'jpg', 'jpeg'])
+    realtime_update = st.sidebar.checkbox(
+        label="Update in Real Time", value=True)
+
+    if img_file is not None:
+        with st.expander('Flipping OpenCV', expanded=True):
+            cols = st.columns(2)
+            image = load_image_PIL(img_file)
+            image = converted(image)
+            with cols[0]:
+
+                st.write(original)
+                st.image(image)
+
+            with cols[1]:
+                flipped_button = st.button("🔄", on_click=increment_counter)
+                if 'count' not in st.session_state:
+                    st.session_state.count = 0
+                    st.markdown("[INFO] Original Image...")
+                    st.image(image)
+                elif st.session_state.count == 1:
+                    # flip the image vertically
+                    flipped = cv.flip(image, 0)
+                    st.markdown("[INFO] flipping image vertically...")
+                    st.write("Clicks:", st.session_state.count)
+                    st.image(flipped)
+                    result = Image.fromarray(flipped)
+                    #img = cv.cvtColor(c, cv.COLOR_RGB2RGBA)
+                    download_button1(flipped, button, download,
+                                     mime_type, key="flipping_1.1")
+                    st.markdown("Source Code")
+                    github_gist(
+                        "https://gist.github.com/jjaramillo34/176fbef9fbae548f3cb683a647798a01", width=800)
+
+                elif st.session_state.count == 2:
+                    # flip the image horizontally
+                    flipped = cv.flip(image, 1)
+                    st.markdown("[INFO] flipping image horizontally...")
+                    st.image(flipped)
+                    result = Image.fromarray(flipped)
+                    download_button1(flipped, button, download,
+                                     mime_type, key="flipping_1.2")
+                    st.markdown("Source Code")
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/cba249f317b17a1c995fd4e121267383', width=800)
+                elif st.session_state.count == 3:
+                    # flip the image along both axes
+                    flipped = cv.flip(image, -1)
+                    st.markdown(
+                        "[INFO] flipping image horizontally and vertically...")
+                    st.image(flipped)
+                    result = Image.fromarray(flipped)
+                    download_button1(flipped, button, download,
+                                     mime_type, key="flipping_1.3")
+                    st.markdown("Source Code")
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/f073f2cb0263d03b49c08f65897993bd', width=800)
+                elif st.session_state.count == 4:
+                    st.session_state.count = 0
+                    st.markdown("[INFO] Original Image...")
+                    st.image(image)
+
+    else:
+        with st.expander("Flipping OpenCV Default Image", expanded=True):
+            cols = st.columns(2)
+            with cols[0]:
+                image = load_image(default_image)
+                st.write(original)
+                st.image(image)
+
+            with cols[1]:
+                flipped_button = st.button("🔄", on_click=increment_counter)
+
+                if 'count' not in st.session_state:
+                    st.session_state.count = 0
+                    st.markdown("[INFO] Original Image...")
+                    st.image(image)
+                elif st.session_state.count == 1:
+                    # flip the image vertically
+                    flipped = cv.flip(image, 0)
+                    st.markdown("[INFO] flipping image vertically...")
+                    st.write("Clicks:", st.session_state.count)
+                    st.image(flipped)
+                    result = Image.fromarray(flipped)
+                    download_button1(flipped, button, download,
+                                     mime_type, key="flipping_1.4")
+                    st.markdown("Source Code")
+                    github_gist(
+                        "https://gist.github.com/jjaramillo34/176fbef9fbae548f3cb683a647798a01", width=800)
+
+                elif st.session_state.count == 2:
+                    # flip the image horizontally
+                    flipped = cv.flip(image, 1)
+                    st.markdown("[INFO] flipping image horizontally...")
+                    st.image(flipped)
+                    result = Image.fromarray(flipped)
+                    download_button1(flipped, button, download,
+                                     mime_type, key="flipping_1.1")
+                    st.markdown("Source Code")
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/cba249f317b17a1c995fd4e121267383', width=800)
+                elif st.session_state.count == 3:
+                    # flip the image along both axes
+                    flipped = cv.flip(image, -1)
+                    st.markdown(
+                        "[INFO] flipping image horizontally and vertically...")
+                    st.image(flipped)
+                    st.markdown("Source Code")
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/f073f2cb0263d03b49c08f65897993bd', width=800)
+                elif st.session_state.count == 4:
+                    st.session_state.count = 0
+                    st.markdown("[INFO] Original Image...")
+                    st.image(image)
+
+    tutorial_page('Flipping pyimagesearch.com Tutorial',
+                  'https://pyimagesearch.com/2021/01/20/opencv-flip-image-cv2-flip/')
+
+    source_code(
+        'Source Code Gist',
+        'https://gist.github.com/jjaramillo34/46bd88b64ac5999be44f0fecd150313b')
+
+    with st.expander('DuckDuckGo Search Results'):
+        st.subheader('More About Flipping')
+        scrape_duckduckgo('flipping opencv')
+
+    duckduck_images('Sample Flipping Images',
+                    'flipping opencv')
+
+
+def masking():
+    st.header("Masking Demo")
+    masking_options = st.sidebar.radio(
+        "Masking Options",
+        ('Simple Masking', 'Black/White, Color Masking'))
+    realtime_update = st.sidebar.checkbox(
+        label="Update in Real Time", value=True)
+    img_file = st.file_uploader(
+        label='Upload a file', type=['png', 'jpg', 'jpge'])
+
+    if masking_options == 'Simple Masking':
+        if img_file is not None:
+            with st.expander("Masking Demo Upload", expanded=True):
+                cols = st.columns(3)
+                with cols[0]:
+                    image = load_image_PIL(img_file)
+                    image = converted(image)
+                    st.markdown(original)
+                    st.image(image)
+                with cols[1]:
+                    # a mask is the same size as our image, but has only two pixels values, 0 to 255 -- pixels with
+                    # value of 0 (background) are ignored in the original image while mask pixels with a value 255
+                    # (foreground) are allowed to be kept
+                    mask = np.zeros(image.shape[:2], dtype="uint8")
+
+                    topLeft = st.slider(
+                        'Select a range of TopLeft Corner', 0, image.shape[2], (0, 200))
+                    topRight = st.slider(
+                        'Select a range of TopRight Corner', 0, image.shape[1], (400, 850))
+                    #cv.putText(image, f'({topLeft[0]+ 10}, {topLeft[1]+ 10})', topLeft, font, 4,(255,255,255),2,cv.LINE_AA)
+                    cv.rectangle(mask, topLeft, topRight, 255, -1)
+                    masked = cv.bitwise_and(image, image, mask=mask)
+
+                    # show the output images
+                    #st.markdown('Rectangular Mask')
+                    # st.image(mask)
+                    st.markdown("Mask applied to Image")
+                    st.image(masked)
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/209c2c5b7ef203a4b7702717ea55d10a', width=500)
+
+                with cols[2]:
+                    # now let's make a circular mask with a radius of 298 pixels and appy the mask again
+                    mask = np.zeros(image.shape[:2], dtype="uint8")
+
+                    coor = st.slider('Select a range of Coordinates',
+                                     0, image.shape[1], (300, 500))
+                    r = st.slider('Select a range of Radius', 0, 800, 298)
+                    cv.circle(mask, coor, r, 255, -1)
+                    masked = cv.bitwise_and(image, image, mask=mask)
+
+                    # show the output images
+                    #st.markdown("Circular Mask")
+                    # st.image(mask)
+                    st.markdown("Mask Applied to image")
+                    st.image(masked)
+
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/7a05e332d9ef300aafe8d48192da2c82', width=500)
+
+        else:
+            with st.expander('Masking Demo', expanded=True):
+                cols = st.columns(3)
+                with cols[0]:
+                    image = load_image(default_image)
+                    st.markdown(original)
+                    st.image(image)
+                with cols[1]:
+                    # a mask is the same size as our image, but has only two pixels values, 0 to 255 -- pixels with
+                    # value of 0 (background) are ignored in the original image while mask pixels with a value 255
+                    # (foreground) are allowed to be kept
+                    mask = np.zeros(image.shape[:2], dtype="uint8")
+
+                    topLeft = st.slider(
+                        'Select a range of TopLeft Corner', 0, image.shape[2], (0, 200))
+
+                    topRight = st.slider(
+                        'Select a range of TopRight Corner', 0, image.shape[1], (400, 1200))
+                    #cv.putText(image, f'({topLeft[0]+ 10}, {topLeft[1]+ 10})', topLeft, font, 4,(255,255,255),2,cv.LINE_AA)
+                    cv.rectangle(mask, topLeft, topRight, 255, -1)
+                    masked = cv.bitwise_and(image, image, mask=mask)
+
+                    # show the output images
+                    #st.markdown('Rectangular Mask')
+                    # st.image(mask)
+                    st.markdown("Mask applied to Image")
+                    st.image(masked)
+
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/209c2c5b7ef203a4b7702717ea55d10a', width=500)
+
+                with cols[2]:
+                    # now let's make a circular mask with a radius of 298 pixels and appy the mask again
+                    mask = np.zeros(image.shape[:2], dtype="uint8")
+
+                    coor = st.slider('Select a range of Coordinates',
+                                     0, image.shape[1], (300, 500))
+                    r = st.slider('Select a range of Radius', 0, 800, 298)
+                    cv.circle(mask, coor, r, 255, -1)
+                    masked = cv.bitwise_and(image, image, mask=mask)
+                    # show the output images
+                    st.markdown("Mask Applied to image")
+                    st.image(masked)
+                    github_gist(
+                        'https://gist.github.com/jjaramillo34/7a05e332d9ef300aafe8d48192da2c82', width=500)
+
+        tutorial_page(
+            'Simple Masking pyimagesearch.com Tutorial', 'https://pyimagesearch.com/2021/01/19/image-masking-with-opencv/')
+
+        source_code('Source Code Gist',
+                    'https://gist.github.com/jjaramillo34/7a05e332d9ef300aafe8d48192da2c82')
+
+        with st.expander('DuckDuckGo Search Results', expanded=False):
+            st.subheader("More about Simple Masking")
+            scrape_duckduckgo('masking opencv')
+
+        duckduck_images('Sample Masking Images', 'masking opencv')
+
+    else:
+        if img_file is not None:
+            with st.expander('Black/White, Color Masking Demo', expanded=True):
+                cols = st.columns(3)
+                with cols[0]:
+                    image = load_image_PIL(img_file)
+                    image = converted(image)
+                    st.markdown(original)
+                    st.image(image)
+
+        else:
+            cols = st.columns(2)
+            with cols[0]:
+                color = st.color_picker('Pick A Color', '#FFFF00')
+            with cols[1]:
+                hsv_coverted = ImageColor.getcolor(color, "RGB")
+                st.markdown(
+                    '<p style="font-size: 14px">Color Hex / Color Name </p>', unsafe_allow_html=True)
+                st.write(f'{color} / {convert_rgb_to_names(hsv_coverted)}')
+
+            print(hsv_coverted)
+            u = np.uint8([[[0, 236, 236]]])
+            l = np.uint8([[[0, 236, 236]]])
+            # define range of blue color in HSV
+            lower_yellow = np.array(cv.cvtColor(l, cv.COLOR_BGR2HSV))
+            upper_yellow = np.array(cv.cvtColor(u, cv.COLOR_BGR2HSV))
+
+            hsv_upper = np.uint8(
+                [[[hsv_coverted[2], hsv_coverted[1], hsv_coverted[0]]]])
+            hsv_color = cv.cvtColor(hsv_upper, cv.COLOR_BGR2HSV)
+
+            hsv_lower = [hsv_color[0][0][0] - 10, 100, 100]
+
+            print(f'lower bound hsv: {lower_yellow}')
+            print(f'upper bound hsv: {upper_yellow}')
+
+            cols = st.columns(2)
+            with cols[0]:
+                HMin = st.slider('HMin', min_value=0,
+                                 max_value=179, value=20, key='1')
+                SMin = st.slider('SMin', min_value=0,
+                                 max_value=255, value=70, key='2')
+                VMin = st.slider('VMin', min_value=0,
+                                 max_value=255, value=100, key='3')
+            with cols[1]:
+                HMax = st.slider('HMax', min_value=0, max_value=179,
+                                 value=int(hsv_color[0][0][0]), key='4')
+                SMax = st.slider('SMax', min_value=0, max_value=255,
+                                 value=int(hsv_color[0][0][1]), key='5')
+                VMax = st.slider('VMax', min_value=0, max_value=255,
+                                 value=int(hsv_color[0][0][2]), key='6')
+            #hMin = sMin = vMin = hMax = sMax = vMax = 0
+            #phMin = psMin = pvMin = phMax = psMax = pvMax = 0
+
+            cols = st.columns(2)
+
+            with cols[0]:
+                # Set minimum and maximum HSV values to display
+                lower = np.array([HMin, SMin, VMin])
+                upper = np.array([HMax, SMax, VMax])
+
+                image = load_image('images/stop.jpg')
+                st.markdown(original)
+                st.image(image)
+
+            with cols[1]:
+                # The kernel to be used for dilation purpose
+                kernel = np.ones((5, 5), np.uint8)
+
+                # converting the image to HSV format
+                hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+                # defining the lower and upper values of HSV,
+                # this will detect yellow colour
+                Lower_hsv = np.array([20, 70, 100])
+                Upper_hsv = np.array([30, 255, 255])
+
+                # creating the mask by eroding,morphing,
+                # dilating process
+                Mask = cv.inRange(hsv, lower, upper)
+                Mask = cv.erode(Mask, kernel, iterations=1)
+                Mask = cv.morphologyEx(Mask, cv.MORPH_OPEN, kernel)
+                Mask = cv.dilate(Mask, kernel, iterations=1)
+
+                # Inverting the mask by
+                # performing bitwise-not operation
+                Mask = cv.bitwise_not(Mask)
+
+                st.image(Mask)
