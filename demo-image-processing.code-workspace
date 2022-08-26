@@ -1,0 +1,14 @@
+{
+    "folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "[yourrepo-db source archive]",
+			"uri": "codeql-zip-archive://0-72/Users/javierjaramillo/Desktop/demo-image-processing/yourrepo-db/src.zip"
+		}
+	],
+    "settings": {
+        "terminal.integrated.defaultProfile.osx": "GitBash"
+    }
+}
