@@ -725,16 +725,88 @@ def masking():
 
     else:
         if img_file is not None:
-            with st.expander('Black/White, Color Masking Demo', expanded=True):
-                cols = st.columns(3)
+            with st.expander('Black/White, Color Masking', expanded=True):
+                cols = st.columns(4)
                 with cols[0]:
+                    color = st.color_picker('Pick A Color', '#FFFF00')
+                with cols[1]:
+                    hsv_coverted = ImageColor.getcolor(color, "RGB")
+                    st.markdown(
+                        '<p style="font-size: 14px">Color Hex / Color Name </p>', unsafe_allow_html=True)
+                    st.write(f'{color} / {convert_rgb_to_names(hsv_coverted)}')
+
+                print(hsv_coverted)
+                u = np.uint8([[[0, 236, 236]]])
+                l = np.uint8([[[0, 236, 236]]])
+                # define range of blue color in HSV
+                lower_yellow = np.array(cv.cvtColor(l, cv.COLOR_BGR2HSV))
+                upper_yellow = np.array(cv.cvtColor(u, cv.COLOR_BGR2HSV))
+
+                hsv_upper = np.uint8(
+                    [[[hsv_coverted[2], hsv_coverted[1], hsv_coverted[0]]]])
+                hsv_color = cv.cvtColor(hsv_upper, cv.COLOR_BGR2HSV)
+
+                hsv_lower = [hsv_color[0][0][0] - 10, 100, 100]
+
+                print(f'lower bound hsv: {lower_yellow}')
+                print(f'upper bound hsv: {upper_yellow}')
+
+                with cols[0]:
+                    HMin = st.slider('HMin', min_value=0,
+                                     max_value=179, value=20, key='1')
+                    SMin = st.slider('SMin', min_value=0,
+                                     max_value=255, value=70, key='2')
+                    VMin = st.slider('VMin', min_value=0,
+                                     max_value=255, value=100, key='3')
+                with cols[1]:
+                    HMax = st.slider('HMax', min_value=0, max_value=179,
+                                     value=int(hsv_color[0][0][0]), key='4')
+                    SMax = st.slider('SMax', min_value=0, max_value=255,
+                                     value=int(hsv_color[0][0][1]), key='5')
+                    VMax = st.slider('VMax', min_value=0, max_value=255,
+                                     value=int(hsv_color[0][0][2]), key='6')
+                #hMin = sMin = vMin = hMax = sMax = vMax = 0
+                #phMin = psMin = pvMin = phMax = psMax = pvMax = 0
+
+                #cols = st.columns(2)
+
+                with cols[2]:
+                    # Set minimum and maximum HSV values to display
+                    lower = np.array([HMin, SMin, VMin])
+                    upper = np.array([HMax, SMax, VMax])
+
                     image = load_image_PIL(img_file)
                     image = converted(image)
                     st.markdown(original)
                     st.image(image)
 
+                with cols[3]:
+                    # The kernel to be used for dilation purpose
+                    kernel = np.ones((5, 5), np.uint8)
+
+                    # converting the image to HSV format
+                    hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
+
+                    # defining the lower and upper values of HSV,
+                    # this will detect yellow colour
+                    Lower_hsv = np.array([20, 70, 100])
+                    Upper_hsv = np.array([30, 255, 255])
+
+                    # creating the mask by eroding,morphing,
+                    # dilating process
+                    Mask = cv.inRange(hsv, lower, upper)
+                    Mask = cv.erode(Mask, kernel, iterations=1)
+                    Mask = cv.morphologyEx(Mask, cv.MORPH_OPEN, kernel)
+                    Mask = cv.dilate(Mask, kernel, iterations=1)
+
+                    # Inverting the mask by
+                    # performing bitwise-not operation
+                    Mask = cv.bitwise_not(Mask)
+                    st.markdown("Mask Applied to image")
+                    st.image(Mask)
+
         else:
-            cols = st.columns(2)
+            cols = st.columns(4)
             with cols[0]:
                 color = st.color_picker('Pick A Color', '#FFFF00')
             with cols[1]:
@@ -759,7 +831,6 @@ def masking():
             print(f'lower bound hsv: {lower_yellow}')
             print(f'upper bound hsv: {upper_yellow}')
 
-            cols = st.columns(2)
             with cols[0]:
                 HMin = st.slider('HMin', min_value=0,
                                  max_value=179, value=20, key='1')
@@ -777,9 +848,9 @@ def masking():
             #hMin = sMin = vMin = hMax = sMax = vMax = 0
             #phMin = psMin = pvMin = phMax = psMax = pvMax = 0
 
-            cols = st.columns(2)
+            #cols = st.columns(2)
 
-            with cols[0]:
+            with cols[2]:
                 # Set minimum and maximum HSV values to display
                 lower = np.array([HMin, SMin, VMin])
                 upper = np.array([HMax, SMax, VMax])
@@ -788,7 +859,7 @@ def masking():
                 st.markdown(original)
                 st.image(image)
 
-            with cols[1]:
+            with cols[3]:
                 # The kernel to be used for dilation purpose
                 kernel = np.ones((5, 5), np.uint8)
 
