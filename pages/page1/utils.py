@@ -805,6 +805,8 @@ def masking():
                     st.markdown("Mask Applied to image")
                     st.image(Mask)
 
+                    # some changes
+
         else:
             cols = st.columns(4)
             with cols[0]:
