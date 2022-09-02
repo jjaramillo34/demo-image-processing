@@ -1,0 +1,461 @@
+<html>
+
+<head>
+    <title>Test</title>
+    <style>
+         :root {
+            --black-color: rgb(22 20 19);
+            --black-color-alpha: rgb(22 20 19 / 34%);
+            --red-color: rgb(253 75 74);
+            --blue-color: rgb(38 114 137);
+            --blue-color-alpha: rgb(38 114 137 / 21%);
+            --yellow-color: rgb(243 183 60);
+            --yellow-color-alpha: rgb(243 183 60 / 34%);
+            --white-color: rgb(230 210 190);
+            --bg-color: rgb(249, 245, 239);
+            --gridgap: 0.62vmin;
+            --playing-state: paused;
+        }
+        
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 100%;
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            background-color: var(--bg-color);
+        }
+        
+        .grid-accordion {
+            width: 89%;
+            height: 89vh;
+            background-color: var(--black-color);
+            border: 2vmin solid rgb(249 245 239);
+            box-shadow: inset 21vmin 21vmin 55vmin var(--blue-color-alpha), inset -13vmin -13vmin 55vmin var(--blue-color-alpha), 1vmin 2vmin 5vmin var(--black-color-alpha);
+            display: grid;
+            grid-template-columns: 33.33% 33.33% 33.33%;
+            grid-template-rows: 33.33% 33.33% 33.33%;
+            animation: pulse 10s infinite alternate;
+            animation-play-state: var(--playing-state);
+        }
+        
+        .grid-accordion:hover {
+            --playing-state: running;
+            cursor: pointer;
+        }
+        
+        .grid-accordion:hover .fibonacci-cell {
+            box-shadow: none;
+        }
+        
+        .fibonacci-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: auto repeat(13, 1fr) auto;
+            grid-template-rows: auto repeat(8, 1fr) auto;
+            gap: var(--gridgap);
+        }
+        
+        .fibonacci-cell {
+            background-color: var(--white-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184), inset -21px -21px 55px var(--yellow-color-alpha);
+        }
+        
+        .fibonacci-grid:nth-of-type(-n + 3) {
+            grid-column: 2 / 5;
+            grid-column: 1 / 2;
+        }
+        
+        .fibonacci-grid:nth-of-type(n + 4) {
+            grid-column: 2 / 3;
+        }
+        
+        .fibonacci-grid:nth-of-type(5) {
+            grid-row: 2 / 4;
+        }
+        
+        .fibonacci-grid:nth-of-type(n + 6) {
+            grid-column: 3 / -1;
+        }
+        
+        .fibonacci-grid:nth-of-type(4) {
+            grid-row: 1 / 2;
+        }
+        
+        .fibonacci-grid:nth-of-type(6) {
+            grid-row: 1 / 2;
+        }
+        
+        .fibonacci-grid:nth-of-type(7) {
+            grid-row: 2 / 3;
+        }
+        /*letter a*/
+        
+        .letter-a .cell1 {
+            grid-column: 10 / span 5;
+            grid-row: 5 / span 5;
+            background-color: var(--blue-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184 / 34%), inset -21px -21px 34px rgb(29 88 106);
+        }
+        
+        .letter-a .cell2 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / span 3;
+            border-top-left-radius: 100%;
+        }
+        
+        .letter-a .cell3 {
+            grid-column: 2 / span 5;
+            grid-row: 5 / span 5;
+            border-top-left-radius: 75% 50%;
+            border-bottom-left-radius: 75% 50%;
+        }
+        
+        .letter-a .cell4 {
+            grid-column: 10 / span 5;
+            grid-row: 2 / span 3;
+            border-top-right-radius: 100%;
+        }
+        
+        .letter-a .cell5 {
+            grid-column: 7 / span 3;
+            grid-row: 2 / span 2;
+        }
+        
+        .letter-a .cell6 {
+            grid-column: 7 / span 3;
+            grid-row: 5 / span 2;
+        }
+        
+        .letter-a .cell7 {
+            grid-column: 7 / span 3;
+            grid-row: 8 / span 2;
+        }
+        /*letter d*/
+        
+        .letter-d .cell1 {
+            grid-column: 10 / span 5;
+            grid-row: 2 / -2;
+        }
+        
+        .letter-d .cell2 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / -2;
+            border-top-left-radius: 100% 50%;
+            border-bottom-left-radius: 100% 50%;
+        }
+        
+        .letter-d .cell3 {
+            grid-column: 7 / span 5;
+            grid-row: 2 / span 2;
+            border-top-right-radius: 100%;
+            grid-column: 7 / span 3;
+        }
+        
+        .letter-d .cell4 {
+            grid-column: 7 / span 3;
+            grid-row: 5 / span 5;
+            background-color: var(--blue-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184 / 34%), inset -21px -21px 34px rgb(29 88 106);
+        }
+        /*letter i*/
+        
+        .letter-i {
+            grid-template-columns: auto repeat(5, 1fr) auto;
+        }
+        
+        .letter-i .cell1 {
+            grid-column: 2 / -1;
+            grid-row: 2 / span 3;
+            background-color: var(--yellow-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184 / 55%), inset -13px -13px 34px rgb(241 169 23);
+        }
+        
+        .letter-i .cell2 {
+            grid-column: 2 / -1;
+            grid-row: 5 / span 5;
+            background-color: var(--yellow-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184 / 55%), inset -13px -13px 34px rgb(241 169 23);
+        }
+        /*letter m*/
+        
+        .letter-m .cell1 {
+            grid-column: 4 / span 3;
+            grid-row: 2 / span 2;
+            border-top-left-radius: 100%;
+        }
+        
+        .letter-m .cell2 {
+            grid-row: 2 / span 2;
+            border-top-left-radius: 100%;
+            grid-column: 7 / span 3;
+            border-top-left-radius: 100%;
+        }
+        
+        .letter-m .cell3 {
+            grid-column: 10 / span 5;
+            grid-row: 2 / -2;
+            border-top-right-radius: 100% 50%;
+        }
+        
+        .letter-m .cell4 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / -2;
+            border-top-right-radius: 100% 50%;
+        }
+        
+        .letter-m .cell5 {
+            grid-column: 7 / span 3;
+            grid-row: 2 / span 8;
+            border-top-right-radius: 100% 50%;
+        }
+        /*letter n*/
+        
+        .letter-n .cell1 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / -2;
+        }
+        
+        .letter-n .cell2 {
+            grid-column: 5 / span 5;
+            grid-row: 2 / span 2;
+            border-top-left-radius: 100%;
+            grid-column: 7 / span 3;
+        }
+        
+        .letter-n .cell3 {
+            grid-column: 10 / span 5;
+            grid-row: 2 / -2;
+            border-top-right-radius: 100% 50%;
+        }
+        /*letter o*/
+        
+        .letter-o .cell1 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / -2;
+            border-top-left-radius: 100% 50%;
+            border-bottom-left-radius: 100% 50%;
+        }
+        
+        .letter-o .cell2 {
+            grid-column: 10 / span 5;
+            grid-row: 2 / -2;
+            border-top-right-radius: 100% 50%;
+            border-bottom-right-radius: 100% 50%;
+        }
+        
+        .letter-o .cell3 {
+            grid-column: 7 / span 3;
+            grid-row: 2 / span 2;
+        }
+        
+        .letter-o .cell4 {
+            grid-column: 7 / span 3;
+            grid-row: 8 / span 2;
+        }
+        /*letter r*/
+        
+        .letter-r .cell1 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / -2;
+        }
+        
+        .letter-r .cell2 {
+            grid-column: 7 / span 3;
+            grid-row: 2 / span 2;
+            border-top-left-radius: 100%;
+        }
+        /*question-mark ?*/
+        
+        .question-mark .cell1 {
+            grid-column: 2 / span 5;
+            grid-row: 2 / span 3;
+            border-top-left-radius: 100%;
+        }
+        
+        .question-mark .cell2 {
+            grid-column: 7 / span 3;
+            grid-row: 2 / span 2;
+        }
+        
+        .question-mark .cell3 {
+            grid-column: 10 / span 5;
+            grid-row: 2 / span 5;
+            border-top-right-radius: 100% 50%;
+            border-bottom-right-radius: 100% 50%;
+        }
+        
+        .question-mark .cell4 {
+            grid-column: 2 / span 5;
+            grid-row: 5 / span 2;
+            border-top-left-radius: 100%;
+        }
+        
+        .question-mark .cell5 {
+            grid-column: 7 / span 3;
+            grid-row: 5 / span 2;
+        }
+        
+        .question-mark .cell6 {
+            grid-column: 2 / span 5;
+            grid-row: 7 / span 3;
+            background-color: var(--blue-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184 / 34%), inset -21px -21px 34px rgb(29 88 106);
+        }
+        
+        .letter-double {
+            grid-template-columns: repeat(13, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+        }
+        
+        .letter-double .letter-r {
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+        }
+        
+        .letter-double .letter-i {
+            grid-column: 9 / -1;
+            grid-row: 1 / -1;
+            margin-left: calc(var(--gridgap) * -1);
+        }
+        
+        .first-n .cell1 {
+            background-color: var(--red-color);
+            box-shadow: inset 13px 13px 34px rgb(192 189 184 / 34%), inset -21px -21px 34px rgb(246, 2, 2);
+        }
+        
+        @keyframes pulse {
+            25% {
+                grid-template-columns: 80% 10% 10%;
+                grid-template-rows: 15% 25% 60%;
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
+            }
+            50% {
+                grid-template-columns: 20% 70% 10%;
+                grid-template-rows: 70% 15% 15%;
+                transform: scale3d(1.05, 1.05, 1.05);
+            }
+            60% {
+                grid-template-columns: 20% 70% 10%;
+                grid-template-rows: 30% 55% 15%;
+            }
+            75% {
+                grid-template-columns: 20% 15% 65%;
+                grid-template-rows: 10% 75% 15%;
+            }
+            100% {
+                grid-template-columns: 15% 10% 75%;
+                grid-template-rows: 15% 10% 75%;
+            }
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div class="grid-accordion">
+        <div class="letter-m fibonacci-grid">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+            <div class="cell4 fibonacci-cell">
+            </div>
+            <div class="cell5 fibonacci-cell">
+            </div>
+        </div>
+        <div class="letter-o fibonacci-grid">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+            <div class="cell4 fibonacci-cell">
+            </div>
+        </div>
+        <div class="letter-n fibonacci-grid first-n">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+        </div>
+        <div class="letter-d fibonacci-grid">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+            <div class="cell4 fibonacci-cell">
+            </div>
+        </div>
+        <div class="letter-double fibonacci-grid">
+            <div class="letter-r flrtv fibonacci-grid">
+                <div class="cell1 fibonacci-cell">
+                </div>
+                <div class="cell2 fibonacci-cell">
+                </div>
+            </div>
+            <div class="letter-i fibonacci-grid">
+                <div class="cell1 fibonacci-cell">
+                </div>
+                <div class="cell2 fibonacci-cell">
+                </div>
+            </div>
+        </div>
+        <div class="letter-a fibonacci-grid">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+            <div class="cell4 fibonacci-cell">
+            </div>
+            <div class="cell5 fibonacci-cell">
+            </div>
+            <div class="cell6 fibonacci-cell">
+            </div>
+            <div class="cell7 fibonacci-cell">
+            </div>
+        </div>
+        <div class="letter-n fibonacci-grid second-n">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+        </div>
+        <div class="question-mark fibonacci-grid">
+            <div class="cell1 fibonacci-cell">
+            </div>
+            <div class="cell2 fibonacci-cell">
+            </div>
+            <div class="cell3 fibonacci-cell">
+            </div>
+            <div class="cell4 fibonacci-cell">
+            </div>
+            <div class="cell5 fibonacci-cell">
+            </div>
+            <div class="cell6 fibonacci-cell">
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>
